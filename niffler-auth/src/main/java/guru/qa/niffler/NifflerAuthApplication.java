@@ -13,3 +13,4 @@ public class NifflerAuthApplication {
     springApplication.run(args);
   }
 }
+
