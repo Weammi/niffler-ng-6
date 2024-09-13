@@ -12,4 +12,9 @@ enum LocalConfig implements Config {
   public String spendUrl() {
     return "http://frontend.niffler.dc:8093/";
   }
+
+  @Override
+  public String ghUrl() {
+    return "https://api.github.com/";
+  }
 }
