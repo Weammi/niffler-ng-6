@@ -14,5 +14,7 @@ import java.lang.annotation.Target;
 public @interface Category {
     String username();
 
-    boolean archive();
+    boolean archive() default false;
+
+    String title() default "";
 }

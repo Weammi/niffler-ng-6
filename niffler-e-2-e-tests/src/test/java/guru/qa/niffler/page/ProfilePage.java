@@ -22,49 +22,48 @@ public class ProfilePage {
     public Header header = new Header();
 
     public ProfilePage setUsername(String userName) {
-        usernameInput.clear();
         usernameInput.setValue(userName);
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage setName(String name) {
         nameInput.clear();
         nameInput.setValue(name);
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage clickSaveBtn() {
         saveBtn.click();
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage checkShowArchiveOn() {
         showArchiveSwitch.shouldHave(cssClass(muiChecked));
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage checkShowArchiveOff() {
         showArchiveSwitch.shouldNotHave(cssClass(muiChecked));
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage clickShowArchive() {
         showArchiveSwitch.click();
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage setCategory(String text) {
         categoryInput.sendKeys(text);
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage checkArchiveCategoryIsDisplay(String textCategory) {
         archiveCategoryText.find(text(textCategory)).shouldBe(visible);
-        return new ProfilePage();
+        return this;
     }
 
     public ProfilePage checkActiveCategoryIsDisplay(String textCategory) {
         activeCategoryText.find(text(textCategory)).shouldBe(visible);
-        return new ProfilePage();
+        return this;
     }
 }
