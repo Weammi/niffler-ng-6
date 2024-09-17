@@ -16,7 +16,8 @@ class ProfileTest {
 
     @Category(
             username = "duck",
-            archive = true
+            archive = true,
+            title = ""
     )
     @Test
     void archivedCategoryShouldPresentInCategoriesList(CategoryJson category) {
@@ -30,7 +31,8 @@ class ProfileTest {
 
     @Category(
             username = "duck",
-            archive = false
+            archive = false,
+            title = ""
     )
     @Test
     void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {

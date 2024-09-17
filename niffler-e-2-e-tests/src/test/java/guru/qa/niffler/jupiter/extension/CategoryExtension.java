@@ -18,10 +18,10 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     public void beforeEach(ExtensionContext context) throws Exception {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Category.class)
                 .ifPresent(anno -> {
-                    CategoryJson createdCategory;
-                    createdCategory = new CategoryJson(
+                    String name = anno.title().equals("") ? faker.funnyName().name() : anno.title();
+                    CategoryJson createdCategory = new CategoryJson(
                             null,
-                            faker.funnyName().name(),
+                            name,
                             anno.username(),
                             anno.archive()
                     );
@@ -46,15 +46,13 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
         CategoryJson category = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-        if (!category.archived()) {
-            CategoryJson categoryJson = new CategoryJson(
-                    category.id(),
-                    category.name(),
-                    category.username(),
-                    true
-            );
-            categoryApiClient.updateCategory(category.username(), categoryJson);
-        }
+        CategoryJson categoryJson = new CategoryJson(
+                category.id(),
+                category.name(),
+                category.username(),
+                true
+        );
+        categoryApiClient.updateCategory(category.username(), categoryJson);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class LoginPage {
         usernameInput.setValue(username);
         passwordInput.setValue(password);
         submitButton.click();
-        return new LoginPage();
+        return this;
     }
 
     public RegisterPage createNewAccount() {
@@ -32,7 +32,8 @@ public class LoginPage {
         return new RegisterPage();
     }
 
-    public void checkErrorTextIsDisplay(String errorText) {
+    public LoginPage checkErrorTextIsDisplay(String errorText) {
         this.errorText.shouldHave(text(errorText));
+        return this;
     }
 }

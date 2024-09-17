@@ -21,16 +21,18 @@ public class MainPage {
         return new EditSpendingPage();
     }
 
-    public void checkThatTableContainsSpending(String spendingDescription) {
+    public MainPage checkThatTableContainsSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).should(visible);
+        return this;
     }
 
     public MainPage checkHistoryOfSpendingsIsDisplay() {
         spendings.shouldBe(visible);
-        return new MainPage();
+        return this;
     }
 
-    public void checkStatisticsIsDisplay() {
+    public MainPage checkStatisticsIsDisplay() {
         statistics.shouldBe(visible);
+        return this;
     }
 }

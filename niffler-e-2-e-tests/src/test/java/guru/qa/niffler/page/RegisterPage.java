@@ -18,36 +18,36 @@ public class RegisterPage {
 
     public RegisterPage setUsername(String username) {
         usernameInput.sendKeys(username);
-        return new RegisterPage();
+        return this;
     }
 
     public RegisterPage setPassword(String password) {
         passwordInput.sendKeys(password);
-        return new RegisterPage();
+        return this;
     }
 
     public RegisterPage setPasswordSubmit(String password) {
         passwordSubmitInput.sendKeys(password);
-        return new RegisterPage();
+        return this;
     }
 
     public RegisterPage clickSignUpBtn() {
         signUpBtn.click();
-        return new RegisterPage();
+        return this;
     }
 
     public RegisterPage checkCongratulationsText() {
         congratulationsText.shouldHave(text("Congratulations! You've registered!"));
-        return new RegisterPage();
+        return this;
     }
 
     public RegisterPage checkSignInBtnIsDisplay() {
         signInBtn.shouldBe(visible);
-        return new RegisterPage();
+        return this;
     }
 
     public RegisterPage checkErrorTextIsDisplay(String errorText) {
         this.errorText.shouldHave(text(errorText));
-        return new RegisterPage();
+        return this;
     }
 }

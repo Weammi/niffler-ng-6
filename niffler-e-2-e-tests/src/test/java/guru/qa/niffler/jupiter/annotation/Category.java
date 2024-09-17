@@ -15,4 +15,5 @@ public @interface Category {
     String username();
 
     boolean archive();
+    String title();
 }
