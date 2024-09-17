@@ -3,21 +3,19 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(BrowserExtension.class)
+@WebTest
 class ProfileTest {
 
     private static final Config CFG = Config.getInstance();
 
     @Category(
             username = "duck",
-            archive = true,
-            title = ""
+            archive = true
     )
     @Test
     void archivedCategoryShouldPresentInCategoriesList(CategoryJson category) {
@@ -30,9 +28,7 @@ class ProfileTest {
     }
 
     @Category(
-            username = "duck",
-            archive = false,
-            title = ""
+            username = "duck"
     )
     @Test
     void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
