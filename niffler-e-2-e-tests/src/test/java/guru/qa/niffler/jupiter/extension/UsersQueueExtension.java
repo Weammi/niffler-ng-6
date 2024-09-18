@@ -114,9 +114,11 @@ public class UsersQueueExtension implements
         @SuppressWarnings("unchecked")
         Map<UserType, StaticUser> map = context.getStore(NAMESPACE).get(context.getUniqueId(), Map.class);
 
-        for (Map.Entry<UserType, StaticUser> e : map.entrySet()) {
-            Queue<StaticUser> queue = getQueueByUserType(e.getKey());
-            queue.add(e.getValue());
+        if (map != null) {
+            for (Map.Entry<UserType, StaticUser> e : map.entrySet()) {
+                Queue<StaticUser> queue = getQueueByUserType(e.getKey());
+                queue.add(e.getValue());
+            }
         }
     }
 
