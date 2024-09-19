@@ -6,6 +6,9 @@ import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
+import static guru.qa.niffler.utils.RandomDataUtils.randomPassword;
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+
 @WebTest
 class UserShouldStayOnLoginPageAfterLoginWithBadCredentialsTest {
 
@@ -14,7 +17,7 @@ class UserShouldStayOnLoginPageAfterLoginWithBadCredentialsTest {
     @Test
     void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .loginBadCredentials("badLogin", "badPassword")
+                .loginBadCredentials(randomUsername(), randomPassword())
                 .checkErrorTextIsDisplay("Неверные учетные данные пользователя");
     }
 }

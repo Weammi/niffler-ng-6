@@ -9,21 +9,25 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
+import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
+import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
+import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.EMPTY;
+
 @WebTest
 class ProfileTest {
 
     private static final Config CFG = Config.getInstance();
 
     @User(
-            username = "duck",
+            username = "weammi1",
             categories = @Category(
                     archive = true
             )
     )
     @Test
-    void archivedCategoryShouldPresentInCategoriesList(CategoryJson category) {
+    void archivedCategoryShouldPresentInCategoriesList(CategoryJson category, @UserType(EMPTY) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login("duck", "12345")
+                .login(user.username(), user.password())
                 .header.clickAvatar()
                 .clickProfile()
                 .clickShowArchive()
@@ -31,15 +35,14 @@ class ProfileTest {
     }
 
     @User(
-            username = "duck",
+            username = "weammi1",
             categories = @Category(
-                    archive = true
             )
     )
     @Test
-    void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
+    void activeCategoryShouldPresentInCategoriesList(CategoryJson category, @UserType(EMPTY) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login("duck", "12345")
+                .login(user.username(), user.password())
                 .header.clickAvatar()
                 .clickProfile()
                 .checkActiveCategoryIsDisplay(category.name());

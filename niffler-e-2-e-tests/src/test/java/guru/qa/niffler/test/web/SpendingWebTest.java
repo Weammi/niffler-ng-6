@@ -10,6 +10,10 @@ import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 
+import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
+import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
+import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.EMPTY;
+
 @WebTest
 class SpendingWebTest {
 
@@ -24,11 +28,11 @@ class SpendingWebTest {
             )
     )
     @Test
-    void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
+    void categoryDescriptionShouldBeChangedFromTable(SpendJson spend, @UserType(EMPTY) StaticUser user) {
         final String newDescription = "Обучение Niffler Next Generation";
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login("duck", "12345")
+                .login(user.username(), user.password())
                 .editSpending(spend.description())
                 .setNewSpendingDescription(newDescription)
                 .save();
