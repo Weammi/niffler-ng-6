@@ -19,11 +19,11 @@ public class FriendsPage {
 
     public FriendsPage friendTableIsEmpty() {
         friendsTable.shouldHave(size(0));
-        return new FriendsPage();
+        return this;
     }
 
     public FriendsPage friendIsDisplayInRequestsList(String name) {
         requestsTable.find(text(name)).shouldBe(visible);
-        return new FriendsPage();
+        return this;
     }
 }
