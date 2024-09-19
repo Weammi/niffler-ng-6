@@ -16,11 +16,12 @@ class RegisterNewUserTest {
 
     @Test
     void registerNewUser() {
+        final String pass = randomPassword();
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .createNewAccount()
                 .setUsername(randomUsername())
-                .setPassword(randomPassword())
-                .setPasswordSubmit(randomPassword())
+                .setPassword(pass)
+                .setPasswordSubmit(pass)
                 .clickSignUpBtn()
                 .checkCongratulationsText()
                 .checkSignInBtnIsDisplay();

@@ -27,6 +27,6 @@ public class RandomDataUtils {
     }
 
     public static String randomPassword() {
-        return faker.internet().password();
+        return faker.number().digits(5);
     }
 }
