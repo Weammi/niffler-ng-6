@@ -36,7 +36,7 @@ public class UsersQueueExtension implements
     static {
         EMPTY_USERS.add(new StaticUser("weammi1", "1234", true, null, null, null));
         WITH_FRIEND_USERS.add(new StaticUser("weammi2", "1234", false, "weammi3", null, null));
-        WITH_INCOME_REQUEST_USERS.add(new StaticUser("weammi3", "1234", false, null, "weammi1", null));
+        WITH_INCOME_REQUEST_USERS.add(new StaticUser("weammi3", "1234", false, null, "weammi5", null));
         WITH_OUTCOME_REQUEST_USERS.add(new StaticUser("weammi4", "1234", false, null, null, "weammi5"));
     }
 
@@ -112,7 +112,7 @@ public class UsersQueueExtension implements
     @Override
     public void afterTestExecution(ExtensionContext context) {
         @SuppressWarnings("unchecked")
-        Map<UserType, StaticUser> map = context.getStore(NAMESPACE).get(context.getUniqueId(), Map.class);
+        Map<UserType, StaticUser> map = getUserMap(context);
 
         if (map != null) {
             for (Map.Entry<UserType, StaticUser> e : map.entrySet()) {

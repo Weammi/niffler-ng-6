@@ -12,6 +12,6 @@ public class AllPeoplePage {
 
     public AllPeoplePage friendInvitationSent(String name) {
         allTable.find(text(name)).shouldBe(visible).shouldHave(text("Waiting..."));
-        return new AllPeoplePage();
+        return this;
     }
 }
