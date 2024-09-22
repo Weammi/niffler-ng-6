@@ -6,6 +6,9 @@ import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
+import static guru.qa.niffler.utils.RandomDataUtils.randomPassword;
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+
 @WebTest
 class RegisterNewUserTest {
 
@@ -13,11 +16,12 @@ class RegisterNewUserTest {
 
     @Test
     void registerNewUser() {
+        final String pass = randomPassword();
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .createNewAccount()
-                .setUsername("swan")
-                .setPassword("12345")
-                .setPasswordSubmit("12345")
+                .setUsername(randomUsername())
+                .setPassword(pass)
+                .setPasswordSubmit(pass)
                 .clickSignUpBtn()
                 .checkCongratulationsText()
                 .checkSignInBtnIsDisplay();

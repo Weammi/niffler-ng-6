@@ -6,6 +6,9 @@ import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
+import static guru.qa.niffler.utils.RandomDataUtils.randomPassword;
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+
 @WebTest
 class DisplayErrorIfPasswordAndConfirmPasswordNotEqualsTest {
 
@@ -15,8 +18,8 @@ class DisplayErrorIfPasswordAndConfirmPasswordNotEqualsTest {
     void displayErrorIfPasswordAndConfirmPasswordNotEquals() {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .createNewAccount()
-                .setUsername("swan1")
-                .setPassword("12345")
+                .setUsername(randomUsername())
+                .setPassword(randomPassword())
                 .setPasswordSubmit("123456")
                 .clickSignUpBtn()
                 .checkErrorTextIsDisplay("Passwords should be equal");
