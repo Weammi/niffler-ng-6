@@ -14,8 +14,18 @@ enum LocalConfig implements Config {
     }
 
     @Override
+    public String spendJdbcUrl() {
+        return "jdbc:postgresql://localhost:5432/niffler-spend";
+    }
+
+    @Override
     public String authUrl() {
         return "http://auth.niffler.dc:9000";
+    }
+
+    @Override
+    public String authJdbcUrl() {
+        return "jdbc:postgresql://localhost:5432/niffler-auth";
     }
 
     @Override
@@ -26,6 +36,16 @@ enum LocalConfig implements Config {
     @Override
     public String userdataUrl() {
         return "http://userdata.niffler.dc:8089";
+    }
+
+    @Override
+    public String userdataJdbcUrl() {
+        return "jdbc:postgresql://localhost:5432/niffler-userdata";
+    }
+
+    @Override
+    public String currencyJdbcUrl() {
+        return "jdbc:postgresql://localhost:5432/niffler-currency";
     }
 
     @Override
