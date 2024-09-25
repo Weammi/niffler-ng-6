@@ -16,5 +16,5 @@ public interface SpendDao {
 
     void deleteSpend(SpendEntity spend);
 
-    void deleteByCategoryId(UUID id);
+    void deleteAllByCategoryId(UUID id);
 }

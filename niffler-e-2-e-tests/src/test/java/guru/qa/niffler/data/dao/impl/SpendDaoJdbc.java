@@ -125,7 +125,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
-    public void deleteByCategoryId(UUID id) {
+    public void deleteAllByCategoryId(UUID id) {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "DELETE FROM spend WHERE category_id = ?"

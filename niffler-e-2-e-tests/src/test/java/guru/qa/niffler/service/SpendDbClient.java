@@ -19,7 +19,7 @@ public class SpendDbClient {
     public SpendJson createSpend(SpendJson spend) {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
 
-        deleteCategoryIfPresentByUsernameAndCategoryName(spendEntity);
+        deleteAllSpendAndCategoryIfPresentByUsernameAndCategoryName(spendEntity);
 
         if (spendEntity.getCategory().getId() == null) {
             CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
@@ -45,12 +45,12 @@ public class SpendDbClient {
         categoryDao.deleteCategory(categoryEntity);
     }
 
-    private void deleteCategoryIfPresentByUsernameAndCategoryName(SpendEntity spendEntity) {
+    private void deleteAllSpendAndCategoryIfPresentByUsernameAndCategoryName(SpendEntity spendEntity) {
         Optional<CategoryEntity> categoryEntity = categoryDao.findCategoryByUsernameAndCategoryName(
                 spendEntity.getUsername(), spendEntity.getCategory().getName()
         );
         if (categoryEntity.isPresent()) {
-            spendDao.deleteByCategoryId(categoryEntity.get().getId());
+            spendDao.deleteAllByCategoryId(categoryEntity.get().getId());
             categoryDao.deleteCategory(categoryEntity.get());
         }
     }

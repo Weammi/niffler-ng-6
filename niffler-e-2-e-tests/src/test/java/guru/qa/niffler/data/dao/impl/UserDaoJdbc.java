@@ -58,17 +58,18 @@ public class UserDaoJdbc implements UserDao {
                 ps.setObject(1, id);
                 ps.execute();
                 try (ResultSet rs = ps.getResultSet()) {
-                    UserEntity ue = new UserEntity();
-                    ue.setId(rs.getObject("id", UUID.class));
-                    ue.setUsername(rs.getString("username"));
-                    ue.setCurrency(rs.getObject("currency", CurrencyValues.class));
-                    ue.setFirstname(rs.getString("firstname"));
-                    ue.setSurname(rs.getString("surname"));
-                    ue.setFullname(rs.getString("full_name"));
-                    ue.setPhoto(rs.getBytes("photo"));
-                    ue.setPhotoSmall(rs.getBytes("photo_small"));
-
                     if (rs.next()) {
+                        UserEntity ue = new UserEntity();
+
+                        ue.setId(rs.getObject("id", UUID.class));
+                        ue.setUsername(rs.getString("username"));
+                        ue.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                        ue.setFirstname(rs.getString("firstname"));
+                        ue.setSurname(rs.getString("surname"));
+                        ue.setFullname(rs.getString("full_name"));
+                        ue.setPhoto(rs.getBytes("photo"));
+                        ue.setPhotoSmall(rs.getBytes("photo_small"));
+
                         return Optional.of(ue);
                     } else {
                         return Optional.empty();
@@ -89,17 +90,18 @@ public class UserDaoJdbc implements UserDao {
                 ps.setObject(1, username);
                 ps.execute();
                 try (ResultSet rs = ps.getResultSet()) {
-                    UserEntity ue = new UserEntity();
-                    ue.setId(rs.getObject("id", UUID.class));
-                    ue.setUsername(rs.getString("username"));
-                    ue.setCurrency(rs.getObject("currency", CurrencyValues.class));
-                    ue.setFirstname(rs.getString("firstname"));
-                    ue.setSurname(rs.getString("surname"));
-                    ue.setFullname(rs.getString("full_name"));
-                    ue.setPhoto(rs.getBytes("photo"));
-                    ue.setPhotoSmall(rs.getBytes("photo_small"));
-
                     if (rs.next()) {
+                        UserEntity ue = new UserEntity();
+
+                        ue.setId(rs.getObject("id", UUID.class));
+                        ue.setUsername(rs.getString("username"));
+                        ue.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                        ue.setFirstname(rs.getString("firstname"));
+                        ue.setSurname(rs.getString("surname"));
+                        ue.setFullname(rs.getString("full_name"));
+                        ue.setPhoto(rs.getBytes("photo"));
+                        ue.setPhotoSmall(rs.getBytes("photo_small"));
+                        
                         return Optional.of(ue);
                     } else {
                         return Optional.empty();
