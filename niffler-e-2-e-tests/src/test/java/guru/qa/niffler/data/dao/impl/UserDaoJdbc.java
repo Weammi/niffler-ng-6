@@ -19,12 +19,12 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public UserEntity createUser(UserEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO user (username, currency, firstname, surname, full_name, photo, photo_small) " +
+                "INSERT INTO \"user\" (username, currency, firstname, surname, full_name, photo, photo_small) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             ps.setString(1, user.getUsername());
-            ps.setObject(2, user.getCurrency());
+            ps.setString(2, user.getCurrency().name());
             ps.setString(3, user.getFirstname());
             ps.setString(4, user.getSurname());
             ps.setString(5, user.getFullname());
@@ -112,7 +112,7 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public void deleteUser(UserEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "DELETE FROM user WHERE id = ?"
+                "DELETE FROM \"user\" WHERE id = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.execute();
