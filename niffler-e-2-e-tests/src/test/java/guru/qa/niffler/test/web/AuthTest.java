@@ -7,12 +7,31 @@ import org.junit.jupiter.api.Test;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
-public class AuthTest {
+class AuthTest {
 
     @Test
     void authTest() {
         UsersDbClient usersDbClient = new UsersDbClient();
         UserJson user = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+        System.out.println(user);
+    }
+
+    @Test
+    void springJdbcTest() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.createUserSpringJdbc(
                 new UserJson(
                         null,
                         randomUsername(),
