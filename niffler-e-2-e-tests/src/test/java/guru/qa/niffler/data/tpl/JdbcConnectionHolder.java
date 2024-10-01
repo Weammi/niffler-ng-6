@@ -29,7 +29,6 @@ public class JdbcConnectionHolder implements AutoCloseable {
         );
     }
 
-
     @Override
     public void close() {
         Optional.ofNullable(threadConnections.remove(Thread.currentThread().threadId()))
