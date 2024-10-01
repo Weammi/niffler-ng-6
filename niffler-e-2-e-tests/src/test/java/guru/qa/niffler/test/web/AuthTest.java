@@ -10,9 +10,9 @@ import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 class AuthTest {
 
     @Test
-    void authTest() {
+    void springJdbcTest() {
         UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUser(
+        UserJson user = usersDbClient.createUserSpringJdbc(
                 new UserJson(
                         null,
                         randomUsername(),
@@ -27,23 +27,4 @@ class AuthTest {
         );
         System.out.println(user);
     }
-
-//    @Test
-//    void springJdbcTest() {
-//        UsersDbClient usersDbClient = new UsersDbClient();
-//        UserJson user = usersDbClient.createUserSpringJdbc(
-//                new UserJson(
-//                        null,
-//                        randomUsername(),
-//                        null,
-//                        null,
-//                        null,
-//                        CurrencyValues.RUB,
-//                        null,
-//                        null,
-//                        null
-//                )
-//        );
-//        System.out.println(user);
-//    }
 }
