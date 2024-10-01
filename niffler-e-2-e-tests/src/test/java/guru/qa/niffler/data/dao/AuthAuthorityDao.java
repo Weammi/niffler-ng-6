@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface AuthAuthorityDao {
     void create(AuthorityEntity... authority);
+
     List<AuthorityEntity> findAll();
 }
