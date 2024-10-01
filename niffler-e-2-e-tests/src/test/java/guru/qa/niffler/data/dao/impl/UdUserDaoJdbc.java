@@ -5,6 +5,8 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.spend.CurrencyValues;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -116,6 +118,30 @@ public class UdUserDaoJdbc implements UdUserDao {
         )) {
             ps.setObject(1, user.getId());
             ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<UserEntity> findAll() {
+        List<UserEntity> userDaoList = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM")) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserEntity userEntity = new UserEntity();
+                userEntity.setId(rs.getObject("id", UUID.class));
+                userEntity.setUsername(rs.getString("username"));
+                userEntity.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                userEntity.setFirstname(rs.getString("firstname"));
+                userEntity.setSurname(rs.getString("surname"));
+                userEntity.setFullname(rs.getString("full_name"));
+                userEntity.setPhoto(rs.getBytes("photo"));
+                userEntity.setPhotoSmall(rs.getBytes("photo_small"));
+
+                userDaoList.add(userEntity);
+            }
+            return userDaoList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
