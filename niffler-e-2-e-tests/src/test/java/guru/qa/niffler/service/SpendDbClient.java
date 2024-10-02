@@ -44,24 +44,24 @@ public class SpendDbClient {
     public void deleteSpend(SpendJson spend) {
         transaction(connection -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
-            new SpendDaoJdbc(connection).deleteSpend(spendEntity);
+            new SpendDaoJdbc(connection).delete(spendEntity);
         }, CFG.spendJdbcUrl());
     }
 
     public void deleteCategory(CategoryJson category) {
         transaction(connection -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-            new CategoryDaoJdbc(connection).deleteCategory(categoryEntity);
+            new CategoryDaoJdbc(connection).delete(categoryEntity);
         }, CFG.spendJdbcUrl());
     }
 
     private void deleteAllSpendAndCategoryIfPresentByUsernameAndCategoryName(Connection connection, SpendEntity spendEntity) {
-        Optional<CategoryEntity> categoryEntity = new CategoryDaoJdbc(connection).findCategoryByUsernameAndCategoryName(
+        Optional<CategoryEntity> categoryEntity = new CategoryDaoJdbc(connection).findByUsernameAndCategoryName(
                 spendEntity.getUsername(), spendEntity.getCategory().getName()
         );
         if (categoryEntity.isPresent()) {
             new SpendDaoJdbc(connection).deleteAllByCategoryId(categoryEntity.get().getId());
-            new CategoryDaoJdbc(connection).deleteCategory(categoryEntity.get());
+            new CategoryDaoJdbc(connection).delete(categoryEntity.get());
         }
     }
 }

@@ -1,23 +1,25 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.UdUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.spend.CurrencyValues;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserDaoJdbc implements UserDao {
+public class UdUserDaoJdbc implements UdUserDao {
 
     private final Connection connection;
 
-    public UserDaoJdbc(Connection connection) {
+    public UdUserDaoJdbc(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public UserEntity createUser(UserEntity user) {
+    public UserEntity create(UserEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO \"user\" (username, currency, firstname, surname, full_name, photo, photo_small) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -50,7 +52,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public Optional<UserEntity> findUserById(UUID id) {
+    public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM user WHERE id = ?"
         )) {
@@ -110,12 +112,36 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public void deleteUser(UserEntity user) {
+    public void delete(UserEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<UserEntity> findAll() {
+        List<UserEntity> userDaoList = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM")) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserEntity userEntity = new UserEntity();
+                userEntity.setId(rs.getObject("id", UUID.class));
+                userEntity.setUsername(rs.getString("username"));
+                userEntity.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                userEntity.setFirstname(rs.getString("firstname"));
+                userEntity.setSurname(rs.getString("surname"));
+                userEntity.setFullname(rs.getString("full_name"));
+                userEntity.setPhoto(rs.getBytes("photo"));
+                userEntity.setPhotoSmall(rs.getBytes("photo_small"));
+
+                userDaoList.add(userEntity);
+            }
+            return userDaoList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
