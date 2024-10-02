@@ -10,9 +10,66 @@ import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 class AuthTest {
 
     @Test
-    void springJdbcTest() {
+    void JdbcWithoutTx() { // Кэп: ролбэк не происходит
         UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserSpringJdbc(
+        UserJson user = usersDbClient.createUserJdbcWithoutTx(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+        System.out.println(user);
+    }
+
+    @Test
+    void JdbcWithTx() { // Кэп: ролбэк не происходит
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.createUserJdbcWithTx(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+        System.out.println(user);
+    }
+
+    @Test
+    void springJdbcWithoutTx() { // Кэп: ролбэк не происходит
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.createUserSpringJdbcWithoutTx(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+        System.out.println(user);
+    }
+
+    @Test
+    void springJdbcWithTx() { // Кэп: ролбэк происходит
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.createUserSpringJdbcWithTx(
                 new UserJson(
                         null,
                         randomUsername(),
