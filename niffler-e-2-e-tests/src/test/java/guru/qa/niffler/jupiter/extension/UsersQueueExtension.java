@@ -19,15 +19,6 @@ public class UsersQueueExtension implements
         ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UsersQueueExtension.class);
-
-    public record StaticUser(String username,
-                             String password,
-                             boolean empty,
-                             String friend,
-                             String income,
-                             String outcome) {
-    }
-
     private static final Queue<StaticUser> EMPTY_USERS = new ConcurrentLinkedQueue<>();
     private static final Queue<StaticUser> WITH_FRIEND_USERS = new ConcurrentLinkedQueue<>();
     private static final Queue<StaticUser> WITH_INCOME_REQUEST_USERS = new ConcurrentLinkedQueue<>();
@@ -38,16 +29,6 @@ public class UsersQueueExtension implements
         WITH_FRIEND_USERS.add(new StaticUser("weammi2", "1234", false, "weammi3", null, null));
         WITH_INCOME_REQUEST_USERS.add(new StaticUser("weammi4", "1234", false, null, "weammi5", null));
         WITH_OUTCOME_REQUEST_USERS.add(new StaticUser("weammi3", "1234", false, null, null, "weammi5"));
-    }
-
-    @Target(ElementType.PARAMETER)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface UserType {
-        Type value() default Type.EMPTY;
-
-        enum Type {
-            EMPTY, WITH_FRIEND, WITH_INCOME_REQUEST, WITH_OUTCOME_REQUEST
-        }
     }
 
     private Queue<StaticUser> getQueueByUserType(UserType type) {
@@ -139,5 +120,23 @@ public class UsersQueueExtension implements
         Map<UserType, StaticUser> userMap = getUserMap(extensionContext);
         UserType ut = parameterContext.findAnnotation(UserType.class).orElseThrow(() -> new ParameterResolutionException("Annotation @UserType.class not found"));
         return userMap.get(ut);
+    }
+
+    @Target(ElementType.PARAMETER)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface UserType {
+        Type value() default Type.EMPTY;
+
+        enum Type {
+            EMPTY, WITH_FRIEND, WITH_INCOME_REQUEST, WITH_OUTCOME_REQUEST
+        }
+    }
+
+    public record StaticUser(String username,
+                             String password,
+                             boolean empty,
+                             String friend,
+                             String income,
+                             String outcome) {
     }
 }
