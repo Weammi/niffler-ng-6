@@ -9,9 +9,10 @@ import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
 class AuthTest {
 
+    private UsersDbClient usersDbClient = new UsersDbClient();
+
     @Test
-    void JdbcWithoutTx() { // Кэп: ролбэк не происходит
-        UsersDbClient usersDbClient = new UsersDbClient();
+    void jdbcWithoutTx() { // Кэп: ролбэк не происходит
         UserJson user = usersDbClient.createUserJdbcWithoutTx(
                 new UserJson(
                         null,
@@ -29,8 +30,7 @@ class AuthTest {
     }
 
     @Test
-    void JdbcWithTx() { // Кэп: ролбэк не происходит
-        UsersDbClient usersDbClient = new UsersDbClient();
+    void jdbcWithTx() { // Кэп: ролбэк не происходит
         UserJson user = usersDbClient.createUserJdbcWithTx(
                 new UserJson(
                         null,
@@ -49,7 +49,6 @@ class AuthTest {
 
     @Test
     void springJdbcWithoutTx() { // Кэп: ролбэк не происходит
-        UsersDbClient usersDbClient = new UsersDbClient();
         UserJson user = usersDbClient.createUserSpringJdbcWithoutTx(
                 new UserJson(
                         null,
@@ -68,7 +67,6 @@ class AuthTest {
 
     @Test
     void springJdbcWithTx() { // Кэп: ролбэк происходит
-        UsersDbClient usersDbClient = new UsersDbClient();
         UserJson user = usersDbClient.createUserSpringJdbcWithTx(
                 new UserJson(
                         null,
