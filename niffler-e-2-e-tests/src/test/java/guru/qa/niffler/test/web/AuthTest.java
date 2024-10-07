@@ -12,6 +12,24 @@ class AuthTest {
     private UsersDbClient usersDbClient = new UsersDbClient();
 
     @Test
+    void jdbcWithRepository() { // Кэп: ролбэк не происходит
+        UserJson user = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+        System.out.println(user);
+    }
+
+    @Test
     void jdbcWithoutTx() { // Кэп: ролбэк не происходит
         UserJson user = usersDbClient.createUserJdbcWithoutTx(
                 new UserJson(

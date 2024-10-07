@@ -9,6 +9,8 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.userdata.UserJson;
 import org.springframework.data.transaction.ChainedTransactionManager;
@@ -25,6 +27,8 @@ public class UsersDbClient {
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+    private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
 
     private final AuthUserDao authUserDao = new AuthUserDaoJdbc();
     private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoJdbc();
@@ -49,6 +53,33 @@ public class UsersDbClient {
             CFG.authJdbcUrl(),
             CFG.userdataJdbcUrl());
 
+    public UserJson createUser(UserJson user) {
+        return xaTransactionTemplate.execute(() -> {
+                    AuthUserEntity authUser = new AuthUserEntity();
+                    authUser.setUsername(user.username());
+                    authUser.setPassword(pe.encode("12345"));
+                    authUser.setEnabled(true);
+                    authUser.setAccountNonExpired(true);
+                    authUser.setAccountNonLocked(true);
+                    authUser.setCredentialsNonExpired(true);
+                    authUser.setAuthorities(Arrays.stream(Authority.values()).map(
+                            e -> {
+                                AuthorityEntity ae = new AuthorityEntity();
+                                ae.setUser(authUser);
+                                ae.setAuthority(e);
+                                return ae;
+                            }
+                    ).toList());
+
+                    authUserRepository.create(authUser);
+                    return UserJson.fromEntity(
+                            udUserDao.create(UserEntity.fromJson(user)),
+                            null
+                    );
+                }
+        );
+    }
+
     public UserJson createUserJdbcWithoutTx(UserJson user) {
         AuthUserEntity authUser = new AuthUserEntity();
         authUser.setUsername(user.username());
@@ -63,7 +94,7 @@ public class UsersDbClient {
         AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                 e -> {
                     AuthorityEntity ae = new AuthorityEntity();
-                    ae.setUserId(createdAuthUser.getId());
+                    ae.setUser(createdAuthUser);
                     ae.setAuthority(e);
                     return ae;
                 }
@@ -92,7 +123,7 @@ public class UsersDbClient {
             AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                     e -> {
                         AuthorityEntity ae = new AuthorityEntity();
-                        ae.setUserId(createdAuthUser.getId());
+                        ae.setUser(createdAuthUser);
                         ae.setAuthority(e);
                         return ae;
                     }
@@ -121,7 +152,7 @@ public class UsersDbClient {
         AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                 e -> {
                     AuthorityEntity ae = new AuthorityEntity();
-                    ae.setUserId(createdAuthUser.getId());
+                    ae.setUser(createdAuthUser);
                     ae.setAuthority(e);
                     return ae;
                 }
@@ -150,7 +181,7 @@ public class UsersDbClient {
             AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                     e -> {
                         AuthorityEntity ae = new AuthorityEntity();
-                        ae.setUserId(createdAuthUser.getId());
+                        ae.setUser(createdAuthUser);
                         ae.setAuthority(e);
                         return ae;
                     }
