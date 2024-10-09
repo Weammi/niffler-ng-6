@@ -12,8 +12,22 @@ class AuthTest {
     private UsersDbClient usersDbClient = new UsersDbClient();
 
     @Test
-    void jdbcWithoutTx() { // Кэп: ролбэк не происходит
-        UserJson user = usersDbClient.createUserJdbcWithoutTx(
+    void addFriend() {
+        UserJson firstUser = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        "test 20",
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+
+        UserJson secondUser = usersDbClient.createUser(
                 new UserJson(
                         null,
                         randomUsername(),
@@ -26,12 +40,13 @@ class AuthTest {
                         null
                 )
         );
-        System.out.println(user);
+
+        usersDbClient.addFriend(firstUser, secondUser);
     }
 
     @Test
-    void jdbcWithTx() { // Кэп: ролбэк не происходит
-        UserJson user = usersDbClient.createUserJdbcWithTx(
+    void addInvitation() {
+        UserJson firstUser = usersDbClient.createUser(
                 new UserJson(
                         null,
                         randomUsername(),
@@ -44,12 +59,8 @@ class AuthTest {
                         null
                 )
         );
-        System.out.println(user);
-    }
 
-    @Test
-    void springJdbcWithoutTx() { // Кэп: ролбэк не происходит
-        UserJson user = usersDbClient.createUserSpringJdbcWithoutTx(
+        UserJson secondUser = usersDbClient.createUser(
                 new UserJson(
                         null,
                         randomUsername(),
@@ -62,24 +73,7 @@ class AuthTest {
                         null
                 )
         );
-        System.out.println(user);
-    }
 
-    @Test
-    void springJdbcWithTx() { // Кэп: ролбэк происходит
-        UserJson user = usersDbClient.createUserSpringJdbcWithTx(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null
-                )
-        );
-        System.out.println(user);
+        usersDbClient.addInvitation(firstUser, secondUser);
     }
 }
