@@ -67,7 +67,7 @@ public class UdUserDaoRepositoryJdbc implements UdUserRepository {
 
                     ue.setId(rs.getObject("id", UUID.class));
                     ue.setUsername(rs.getString("username"));
-                    ue.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                    ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     ue.setFirstname(rs.getString("firstname"));
                     ue.setSurname(rs.getString("surname"));
                     ue.setFullname(rs.getString("full_name"));
