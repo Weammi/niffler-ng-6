@@ -85,6 +85,11 @@ public class UdUserDaoRepositoryJdbc implements UdUserRepository {
     }
 
     @Override
+    public Optional<UserEntity> findByUsername(String username) {
+        return Optional.empty();
+    }
+
+    @Override
     public void addInvitation(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"friendship\" (requester_id, addressee_id, status, created_date) " +

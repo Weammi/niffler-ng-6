@@ -4,6 +4,8 @@ import guru.qa.niffler.model.spend.CurrencyValues;
 import guru.qa.niffler.model.userdata.UserJson;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
@@ -75,5 +77,20 @@ class AuthTest {
         );
 
         usersDbClient.addInvitation(firstUser, secondUser);
+    }
+
+    @ValueSource(strings = {
+            "valentin-11",
+            "valentin-12",
+            "valentin-13"
+    })
+    @ParameterizedTest
+    void springJdbcTest(String uname) {
+        UserJson user = usersDbClient.createUser(
+                uname,
+                "12345"
+        );
+
+        usersDbClient.addIncomeInvitation(user, 1);
     }
 }
