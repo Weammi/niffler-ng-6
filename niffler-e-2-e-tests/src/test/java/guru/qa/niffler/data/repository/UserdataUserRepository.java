@@ -6,7 +6,7 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UdUserRepository {
+public interface UserdataUserRepository {
 
     UserEntity create(UserEntity user);
 

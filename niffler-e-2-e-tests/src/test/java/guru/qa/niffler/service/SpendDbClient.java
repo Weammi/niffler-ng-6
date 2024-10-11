@@ -17,6 +17,7 @@ import java.util.Optional;
 public class SpendDbClient {
 
     private static final Config CFG = Config.getInstance();
+
     private final SpendDao spendDao = new SpendDaoJdbc();
     private final CategoryDao categoryDao = new CategoryDaoJdbc();
 

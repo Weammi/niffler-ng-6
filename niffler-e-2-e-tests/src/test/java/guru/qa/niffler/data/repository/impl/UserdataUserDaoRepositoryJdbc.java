@@ -2,7 +2,7 @@ package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.data.repository.UdUserRepository;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.spend.CurrencyValues;
 
 import java.sql.PreparedStatement;
@@ -17,7 +17,7 @@ import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.ACCEPTED;
 import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UdUserDaoRepositoryJdbc implements UdUserRepository {
+public class UserdataUserDaoRepositoryJdbc implements UserdataUserRepository {
 
     private static final Config CFG = Config.getInstance();
 

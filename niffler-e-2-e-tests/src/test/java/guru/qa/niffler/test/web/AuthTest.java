@@ -1,6 +1,5 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.model.spend.CurrencyValues;
 import guru.qa.niffler.model.userdata.UserJson;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
@@ -16,73 +15,39 @@ class AuthTest {
     @Test
     void addFriend() {
         UserJson firstUser = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        "test 20",
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null
-                )
+                randomUsername(),
+                "12345"
         );
 
         UserJson secondUser = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null
-                )
+                randomUsername(),
+                "12345"
         );
 
+        usersDbClient.addInvitation(firstUser, secondUser);
+        usersDbClient.addInvitation(secondUser, firstUser);
         usersDbClient.addFriend(firstUser, secondUser);
     }
 
     @Test
     void addInvitation() {
         UserJson firstUser = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null
-                )
+                randomUsername(),
+                "12345"
         );
 
         UserJson secondUser = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null
-                )
+                randomUsername(),
+                "12345"
         );
 
         usersDbClient.addInvitation(firstUser, secondUser);
     }
 
     @ValueSource(strings = {
-            "valentin-11",
-            "valentin-12",
-            "valentin-13"
+            "test20",
+            "test21",
+            "test22"
     })
     @ParameterizedTest
     void springJdbcTest(String uname) {
@@ -91,6 +56,6 @@ class AuthTest {
                 "12345"
         );
 
-        usersDbClient.addIncomeInvitation(user, 1);
+        usersDbClient.addInvitation(user, 1);
     }
 }
