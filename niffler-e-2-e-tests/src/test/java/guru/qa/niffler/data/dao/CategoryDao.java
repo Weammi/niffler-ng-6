@@ -16,5 +16,5 @@ public interface CategoryDao {
 
     List<CategoryEntity> findAll();
 
-    void delete(CategoryEntity category);
+    void remove(CategoryEntity category);
 }

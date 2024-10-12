@@ -10,11 +10,15 @@ public interface UserdataUserRepository {
 
     UserEntity create(UserEntity user);
 
+    UserEntity update(UserEntity user);
+
     Optional<UserEntity> findById(UUID id);
 
     Optional<UserEntity> findByUsername(String username);
 
     void addFriend(UserEntity requester, UserEntity addressee);
 
-    void addInvitation(UserEntity requester, UserEntity addressee);
+    void sendInvitation(UserEntity requester, UserEntity addressee);
+
+    void remove(UserEntity user);
 }

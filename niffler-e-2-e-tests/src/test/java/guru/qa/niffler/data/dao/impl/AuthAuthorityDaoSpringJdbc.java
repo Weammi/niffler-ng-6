@@ -2,6 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthAuthorityEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
@@ -40,5 +41,11 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     public List<AuthorityEntity> findAll() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return jdbcTemplate.query("SELECT * FROM authority", AuthAuthorityEntityRowMapper.instance);
+    }
+
+    @Override
+    public void remove(AuthUserEntity authUserEntity) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        jdbcTemplate.update("DELETE FROM authority WHERE id = ?", authUserEntity.getId());
     }
 }

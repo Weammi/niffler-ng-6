@@ -82,6 +82,33 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
+    public Optional<SpendEntity> findSpendByUsernameAndDescription(String username, String description) {
+        try (PreparedStatement statement = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+                "SELECT * FROM spend WHERE username = ? AND description = ?"
+        )) {
+            statement.setString(1, username);
+            statement.setString(2, description);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    SpendEntity se = new SpendEntity();
+                    se.setId(rs.getObject("id", UUID.class));
+                    se.setUsername(rs.getString("username"));
+                    se.setSpendDate(rs.getDate("spend_date"));
+                    se.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                    se.setDescription(rs.getString("description"));
+                    se.setCategory(rs.getObject("category_id", CategoryEntity.class));
+                    return Optional.of(se);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<SpendEntity> findAll() {
         List<SpendEntity> spendList = new ArrayList<>();
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -108,7 +135,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
-    public void delete(SpendEntity spend) {
+    public void remove(SpendEntity spend) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"spend\" WHERE id = ?"
         )) {

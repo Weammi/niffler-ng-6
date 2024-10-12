@@ -39,7 +39,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     public void afterTestExecution(ExtensionContext context) throws Exception {
         CategoryJson category = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
         if (category != null) {
-            spendDbClient.deleteCategory(category);
+            spendDbClient.removeCategory(category);
         }
     }
 

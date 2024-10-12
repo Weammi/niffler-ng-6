@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.hibernate;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -6,14 +6,12 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static guru.qa.niffler.data.jpa.EntityManagers.em;
 
 public class AuthUserRepositoryHibernate implements AuthUserRepository {
-
 
     private static final Config CFG = Config.getInstance();
 
@@ -27,6 +25,13 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        entityManager.merge(user);
+        return user;
+    }
+
+    @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return Optional.ofNullable(
                 entityManager.find(AuthUserEntity.class, id)
@@ -34,20 +39,22 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
-    public List<AuthUserEntity> findAll() {
-        return List.of();
-    }
-
-    @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
+        String query = "select u from AuthUserEntity u where u.username =: username";
         try {
             return Optional.of(
-                    entityManager.createQuery("select u from UserEntity u where u.username =: username", AuthUserEntity.class)
+                    entityManager.createQuery(query, AuthUserEntity.class)
                             .setParameter("username", username)
                             .getSingleResult()
             );
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void remove(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        entityManager.remove(user);
     }
 }

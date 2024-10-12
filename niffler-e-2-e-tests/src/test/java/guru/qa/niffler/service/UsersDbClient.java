@@ -7,8 +7,8 @@ import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.repository.impl.AuthUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.spend.CurrencyValues;
 import guru.qa.niffler.model.userdata.UserJson;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
-public class UsersDbClient {
+public class UsersDbClient implements UsersClient {
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -31,6 +31,7 @@ public class UsersDbClient {
             CFG.authJdbcUrl(),
             CFG.userdataJdbcUrl());
 
+    @Override
     public UserJson createUser(String username, String password) {
         return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = authUserEntity(username, password);
@@ -43,6 +44,7 @@ public class UsersDbClient {
         );
     }
 
+    @Override
     public void addFriend(UserJson required, UserJson addressee) {
         xaTransactionTemplate.execute(() -> {
             userdataUserRepositoryHibernate.addFriend(
@@ -53,17 +55,8 @@ public class UsersDbClient {
         });
     }
 
-    public void addInvitation(UserJson required, UserJson addressee) {
-        xaTransactionTemplate.execute(() -> {
-            userdataUserRepositoryHibernate.addInvitation(
-                    UserEntity.fromJson(required),
-                    UserEntity.fromJson(addressee)
-            );
-            return null;
-        });
-    }
-
-    public void addInvitation(UserJson targetUser, int count) {
+    @Override
+    public void addFriend(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = userdataUserRepositoryHibernate.findById(
                     targetUser.id()
@@ -75,7 +68,41 @@ public class UsersDbClient {
                             AuthUserEntity authUser = authUserEntity(username, "12345");
                             authUserRepositoryHibernate.create(authUser);
                             UserEntity adressee = userdataUserRepositoryHibernate.create(userEntity(username));
-                            userdataUserRepositoryHibernate.addInvitation(targetEntity, adressee);
+
+                            userdataUserRepositoryHibernate.sendInvitation(targetEntity, adressee);
+                            userdataUserRepositoryHibernate.sendInvitation(adressee, targetEntity);
+
+                            userdataUserRepositoryHibernate.addFriend(targetEntity, adressee);
+                            return null;
+                        }
+                );
+            }
+        }
+    }
+
+    public void sendInvitation(UserJson required, UserJson addressee) {
+        xaTransactionTemplate.execute(() -> {
+            userdataUserRepositoryHibernate.sendInvitation(
+                    UserEntity.fromJson(required),
+                    UserEntity.fromJson(addressee)
+            );
+            return null;
+        });
+    }
+
+    public void sendInvitation(UserJson targetUser, int count) {
+        if (count > 0) {
+            UserEntity targetEntity = userdataUserRepositoryHibernate.findById(
+                    targetUser.id()
+            ).orElseThrow();
+
+            for (int i = 0; i < count; i++) {
+                xaTransactionTemplate.execute(() -> {
+                            String username = randomUsername();
+                            AuthUserEntity authUser = authUserEntity(username, "12345");
+                            authUserRepositoryHibernate.create(authUser);
+                            UserEntity adressee = userdataUserRepositoryHibernate.create(userEntity(username));
+                            userdataUserRepositoryHibernate.sendInvitation(targetEntity, adressee);
                             return null;
                         }
                 );

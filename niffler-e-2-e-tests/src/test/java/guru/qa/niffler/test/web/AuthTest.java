@@ -24,8 +24,8 @@ class AuthTest {
                 "12345"
         );
 
-        usersDbClient.addInvitation(firstUser, secondUser);
-        usersDbClient.addInvitation(secondUser, firstUser);
+        usersDbClient.sendInvitation(firstUser, secondUser);
+        usersDbClient.sendInvitation(secondUser, firstUser);
         usersDbClient.addFriend(firstUser, secondUser);
     }
 
@@ -41,7 +41,7 @@ class AuthTest {
                 "12345"
         );
 
-        usersDbClient.addInvitation(firstUser, secondUser);
+        usersDbClient.sendInvitation(firstUser, secondUser);
     }
 
     @ValueSource(strings = {
@@ -56,6 +56,6 @@ class AuthTest {
                 "12345"
         );
 
-        usersDbClient.addInvitation(user, 1);
+        usersDbClient.sendInvitation(user, 1);
     }
 }
