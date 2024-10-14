@@ -21,7 +21,7 @@ class ProfileTest {
     @User(
             username = "weammi1",
             categories = @Category(
-                    archive = true
+                    archived = true
             )
     )
     @Test

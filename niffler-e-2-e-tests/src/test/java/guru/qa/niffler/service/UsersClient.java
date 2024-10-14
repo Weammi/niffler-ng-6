@@ -1,6 +1,6 @@
 package guru.qa.niffler.service;
 
-import guru.qa.niffler.model.userdata.UserJson;
+import guru.qa.niffler.model.UserJson;
 
 public interface UsersClient {
 

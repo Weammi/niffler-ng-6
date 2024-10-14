@@ -13,7 +13,9 @@ import java.lang.annotation.Target;
 @ExtendWith(CategoryExtension.class)
 public @interface Category {
 
-    boolean archive() default false;
+    String name() default "";
+
+    boolean archived() default false;
 
     String title() default "";
 }
