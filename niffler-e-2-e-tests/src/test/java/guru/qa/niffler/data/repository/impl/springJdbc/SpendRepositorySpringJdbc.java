@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     }
 
     @Override
-    public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+    public List<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
         return spendDao.findSpendByUsernameAndDescription(username, description);
     }
 
@@ -75,6 +76,19 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
         categoryDao.create(category);
+        return category;
+    }
+
+    @Override
+    public CategoryEntity updateCategory(CategoryEntity category) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
+        String updateSql = "UPDATE category SET name = ?, username = ?, archived = ? WHERE id = ?";
+        jdbcTemplate.update(updateSql,
+                category.getName(),
+                category.getUsername(),
+                category.isArchived(),
+                category.getId()
+        );
         return category;
     }
 

@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.model.userdata.UserJson;
+import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +12,7 @@ import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 class AuthTest {
 
     private UsersDbClient usersDbClient = new UsersDbClient();
+    private SpendDbClient spendDbClient = new SpendDbClient();
 
     @Test
     void addFriend() {

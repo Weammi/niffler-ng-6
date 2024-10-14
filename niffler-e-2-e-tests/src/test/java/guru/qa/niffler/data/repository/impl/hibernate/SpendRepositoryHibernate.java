@@ -7,6 +7,7 @@ import guru.qa.niffler.data.repository.SpendRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,24 +41,19 @@ public class SpendRepositoryHibernate implements SpendRepository {
     }
 
     @Override
-    public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
-        String query = "select s from SpendEntity s where s.username =: username and s.description =: description";
-        try {
-            return Optional.of(
-                    entityManager.createQuery(query, SpendEntity.class)
-                            .setParameter("username", username)
-                            .setParameter("description", description)
-                            .getSingleResult()
-            );
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
+    public List<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+        return entityManager.createQuery(
+                        "SELECT s FROM SpendEntity s WHERE s.username = :username AND s.description = :description", SpendEntity.class)
+                .setParameter("username", username)
+                .setParameter("description", description)
+                .getResultList();
     }
 
     @Override
     public void remove(SpendEntity spend) {
         entityManager.joinTransaction();
-        entityManager.remove(spend);
+        SpendEntity attachedSpend = entityManager.contains(spend) ? spend : entityManager.merge(spend);
+        entityManager.remove(attachedSpend);
     }
 
     @Override
@@ -92,6 +88,13 @@ public class SpendRepositoryHibernate implements SpendRepository {
     @Override
     public void removeCategory(CategoryEntity category) {
         entityManager.joinTransaction();
-        entityManager.remove(category);
+        CategoryEntity attachedCategory = entityManager.contains(category) ? category : entityManager.merge(category);
+        entityManager.remove(attachedCategory);
+    }
+
+    @Override
+    public CategoryEntity updateCategory(CategoryEntity category) {
+        entityManager.joinTransaction();
+        return entityManager.merge(category);
     }
 }

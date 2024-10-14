@@ -11,9 +11,13 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.ACCEPTED;
+import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 
 public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
 
@@ -102,11 +106,41 @@ public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
 
     @Override
     public void sendInvitation(UserEntity requester, UserEntity addressee) {
-
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO \"friendship\" " +
+                    "(requester_id, addressee_id, status, created_date) " +
+                    "VALUES (?, ?, ?, ?)");
+            ps.setObject(1, requester.getId());
+            ps.setObject(2, addressee.getId());
+            ps.setString(3, PENDING.name());
+            ps.setDate(4, new java.sql.Date(new Date().getTime()));
+            return ps;
+        });
     }
 
     @Override
     public void addFriend(UserEntity requester, UserEntity addressee) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        String query = "INSERT INTO \"friendship\" " +
+                "(requester_id, addressee_id, status, created_date) " +
+                "VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setObject(1, requester.getId());
+            ps.setObject(2, addressee.getId());
+            ps.setString(3, ACCEPTED.name());
+            ps.setDate(4, new java.sql.Date(new Date().getTime()));
+            return ps;
+        });
 
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setObject(1, addressee.getId());
+            ps.setObject(2, requester.getId());
+            ps.setString(3, ACCEPTED.name());
+            ps.setDate(4, new java.sql.Date(new Date().getTime()));
+            return ps;
+        });
     }
 }

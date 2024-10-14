@@ -12,6 +12,7 @@ import guru.qa.niffler.data.repository.SpendRepository;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,7 +63,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
     }
 
     @Override
-    public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+    public List<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
         return spendDao.findSpendByUsernameAndDescription(username, description);
     }
 
@@ -74,6 +75,21 @@ public class SpendRepositoryJdbc implements SpendRepository {
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
         return categoryDao.create(category);
+    }
+
+    @Override
+    public CategoryEntity updateCategory(CategoryEntity category) {
+        try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+                "UPDATE category SET name = ?, username = ?, archived = ? WHERE id = ?")) {
+            ps.setString(1, category.getName());
+            ps.setString(2, category.getUsername());
+            ps.setBoolean(3, category.isArchived());
+            ps.setObject(4, category.getId());
+            ps.executeUpdate();
+            return category;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

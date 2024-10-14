@@ -9,6 +9,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.spend.CategoryJson;
 import guru.qa.niffler.model.spend.SpendJson;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,11 +26,15 @@ public class SpendDbClient implements SpendClient {
     @Override
     public SpendJson createSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
-                    spendRepository.create(SpendEntity.fromJson(spend));
-                    SpendEntity spendEntity = SpendEntity.fromJson(spend);
-                    return SpendJson.fromEntity(spendEntity);
-                }
-        );
+            SpendEntity spendEntity = SpendEntity.fromJson(spend);
+            if (spendEntity.getCategory().getId() != null) {
+                spendEntity.setCategory(spendRepository.updateCategory(spendEntity.getCategory()));
+            } else {
+                CategoryEntity categoryEntity = spendRepository.createCategory(spendEntity.getCategory());
+                spendEntity.setCategory(categoryEntity);
+            }
+            return SpendJson.fromEntity(spendRepository.create(spendEntity));
+        });
     }
 
     @Override
@@ -50,10 +55,13 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
-    public Optional<SpendJson> findSpendByUsernameAndDescription(String username, String description) {
+    public List<SpendJson> findSpendByUsernameAndDescription(String username, String description) {
         return xaTransactionTemplate.execute(() -> {
-            Optional<SpendEntity> optionalSpendEntity = spendRepository.findByUsernameAndSpendDescription(username, description);
-            return optionalSpendEntity.map(SpendJson::fromEntity);
+            List<SpendEntity> spendEntities = spendRepository.findByUsernameAndSpendDescription(username, description);
+            // Преобразуем список SpendEntity в список SpendJson
+            return spendEntities.stream()
+                    .map(SpendJson::fromEntity)
+                    .toList();
         });
     }
 
@@ -62,6 +70,15 @@ public class SpendDbClient implements SpendClient {
         return xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
             return CategoryJson.fromEntity(spendRepository.createCategory(categoryEntity));
+        });
+    }
+
+    @Override
+    public CategoryJson updateCategory(CategoryJson category) {
+        return xaTransactionTemplate.execute(() -> {
+            CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
+            CategoryEntity updatedEntity = spendRepository.updateCategory(categoryEntity);
+            return CategoryJson.fromEntity(updatedEntity);
         });
     }
 
