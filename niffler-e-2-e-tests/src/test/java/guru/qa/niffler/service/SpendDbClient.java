@@ -46,7 +46,6 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    @Override
     public Optional<SpendJson> findSpendById(UUID id) {
         return xaTransactionTemplate.execute(() -> {
             Optional<SpendEntity> optionalSpendEntity = spendRepository.findById(id);
@@ -54,11 +53,9 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    @Override
     public List<SpendJson> findSpendByUsernameAndDescription(String username, String description) {
         return xaTransactionTemplate.execute(() -> {
             List<SpendEntity> spendEntities = spendRepository.findByUsernameAndSpendDescription(username, description);
-            // Преобразуем список SpendEntity в список SpendJson
             return spendEntities.stream()
                     .map(SpendJson::fromEntity)
                     .toList();
@@ -82,7 +79,6 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    @Override
     public Optional<CategoryJson> findCategoryById(UUID id) {
         return xaTransactionTemplate.execute(() -> {
             Optional<CategoryEntity> optionalCategoryEntity = spendRepository.findCategoryById(id);
@@ -90,7 +86,6 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    @Override
     public Optional<CategoryJson> findCategoryByUsernameAndCategoryName(String username, String name) {
         return xaTransactionTemplate.execute(() -> {
             Optional<CategoryEntity> optionalCategoryEntity =
@@ -99,7 +94,6 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    @Override
     public void removeSpend(SpendJson spend) {
         xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
