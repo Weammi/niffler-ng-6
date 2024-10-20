@@ -28,7 +28,8 @@ class SpendingWebTest {
             )
     )
     @Test
-    void categoryDescriptionShouldBeChangedFromTable(SpendJson spend, @UserType(EMPTY) StaticUser user) {
+    void categoryDescriptionShouldBeChangedFromTable(SpendJson[] spends, @UserType(EMPTY) StaticUser user) {
+        SpendJson spend = spends[0];
         final String newDescription = "Обучение Niffler Next Generation";
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
@@ -37,7 +38,9 @@ class SpendingWebTest {
                 .setNewSpendingDescription(newDescription)
                 .save();
 
-        new MainPage().checkThatTableContainsSpending(newDescription);
+        new MainPage()
+                .setSearch(newDescription)
+                .checkThatTableContainsSpending(newDescription);
     }
 }
 

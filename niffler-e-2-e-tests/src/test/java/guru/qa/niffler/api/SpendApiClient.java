@@ -1,8 +1,10 @@
 package guru.qa.niffler.api;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.model.spend.CategoryJson;
 import guru.qa.niffler.model.spend.CurrencyValues;
 import guru.qa.niffler.model.spend.SpendJson;
+import guru.qa.niffler.service.SpendClient;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -14,7 +16,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SpendApiClient {
+public class SpendApiClient implements SpendClient {
 
     private final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Config.getInstance().spendUrl())
@@ -23,6 +25,7 @@ public class SpendApiClient {
 
     private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
+    @Override
     public SpendJson createSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
@@ -35,7 +38,8 @@ public class SpendApiClient {
         return response.body();
     }
 
-    public SpendJson editSpend(SpendJson spend) {
+    @Override
+    public SpendJson updateSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
             response = spendApi.editSpend(spend)
@@ -45,6 +49,38 @@ public class SpendApiClient {
         }
         assertEquals(200, response.code());
         return response.body();
+    }
+
+    @Override
+    public CategoryJson createCategory(CategoryJson category) {
+        try {
+            Response<CategoryJson> response = spendApi.addCategory(category).execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                throw new RuntimeException("Не удалось создать категорию: " + response.errorBody().string());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при создании категории", e);
+        }
+    }
+
+    @Override
+    public CategoryJson updateCategory(CategoryJson category) {
+        final Response<CategoryJson> response;
+        try {
+            response = spendApi.updateCategory(category)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return response.body();
+    }
+
+    @Override
+    public void removeCategory(CategoryJson category) {
+        throw new UnsupportedOperationException("Невозможно удалить категорию через АПИ");
     }
 
     public SpendJson getSpend(UUID id, String username) {
@@ -71,10 +107,22 @@ public class SpendApiClient {
         return response.body();
     }
 
-    public SpendJson deleteSpends(String username, List<UUID> ids) {
+    public SpendJson removeSpends(String username, List<UUID> ids) {
         final Response<SpendJson> response;
         try {
             response = spendApi.deleteSpends(username, ids)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return response.body();
+    }
+
+    public CategoryJson getAllCategories(boolean excludeArchived) {
+        final Response<CategoryJson> response;
+        try {
+            response = spendApi.getCategories(excludeArchived)
                     .execute();
         } catch (IOException e) {
             throw new AssertionError(e);

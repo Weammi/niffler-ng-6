@@ -25,7 +25,9 @@ class ProfileTest {
             )
     )
     @Test
-    void archivedCategoryShouldPresentInCategoriesList(CategoryJson category, @UserType(EMPTY) StaticUser user) {
+    void archivedCategoryShouldPresentInCategoriesList(CategoryJson[] categories, @UserType(EMPTY) StaticUser user) {
+        CategoryJson category = categories[0];
+
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .header.clickAvatar()
@@ -40,7 +42,9 @@ class ProfileTest {
             )
     )
     @Test
-    void activeCategoryShouldPresentInCategoriesList(CategoryJson category, @UserType(EMPTY) StaticUser user) {
+    void activeCategoryShouldPresentInCategoriesList(CategoryJson[] categories, @UserType(EMPTY) StaticUser user) {
+        CategoryJson category = categories[0];
+
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .header.clickAvatar()
