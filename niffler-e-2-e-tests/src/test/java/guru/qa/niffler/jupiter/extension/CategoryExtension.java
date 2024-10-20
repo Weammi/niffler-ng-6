@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
-import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
 public class CategoryExtension implements BeforeEachCallback, ParameterResolver {
 
@@ -56,20 +55,6 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
                                     result
                             );
                         }
-
-                        if (userAnno.categories().length > 0) {
-                            Category category = userAnno.categories()[0];
-                            CategoryJson createdCategory = new CategoryJson(
-                                    null,
-                                    category.title().equals("") ? randomUsername() : category.title(),
-                                    userAnno.username(),
-                                    category.archived()
-                            );
-                            spendClient.createCategory(createdCategory);
-
-                            context.getStore(NAMESPACE)
-                                    .put(context.getUniqueId(), createdCategory);
-                        }
                     }
                 });
     }
@@ -82,7 +67,10 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
     @Override
     @SuppressWarnings("unchecked")
     public CategoryJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return (CategoryJson[]) extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class)
-                .toArray();
+        List<CategoryJson> categories = (List<CategoryJson>) extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class);
+        if (categories != null) {
+            return categories.toArray(new CategoryJson[0]);
+        }
+        return new CategoryJson[0];
     }
 }
