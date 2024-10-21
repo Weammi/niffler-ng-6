@@ -21,6 +21,7 @@ class FriendsTest {
                 .login(user.username(), user.password())
                 .header.clickAvatar()
                 .clickFriends()
+                .setSearch("weammi3")
                 .friendIsDisplayInFriendsList("weammi3");
     }
 
@@ -39,6 +40,7 @@ class FriendsTest {
                 .login(user.username(), user.password())
                 .header.clickAvatar()
                 .clickFriends()
+                .setSearch("weammi5")
                 .friendIsDisplayInRequestsList("weammi5");
     }
 
