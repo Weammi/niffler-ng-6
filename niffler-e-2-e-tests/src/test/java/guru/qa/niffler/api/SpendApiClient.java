@@ -5,6 +5,7 @@ import guru.qa.niffler.model.spend.CategoryJson;
 import guru.qa.niffler.model.spend.CurrencyValues;
 import guru.qa.niffler.model.spend.SpendJson;
 import guru.qa.niffler.service.SpendClient;
+import io.qameta.allure.Step;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -31,6 +32,7 @@ public class SpendApiClient implements SpendClient {
     private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
     @Override
+    @Step("Создание новой траты")
     public @Nullable SpendJson createSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
@@ -44,6 +46,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
+    @Step("Редактирование траты")
     public @Nullable SpendJson updateSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
@@ -57,6 +60,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
+    @Step("Создание категории")
     public @Nullable CategoryJson createCategory(CategoryJson category) {
         try {
             Response<CategoryJson> response = spendApi.addCategory(category).execute();
@@ -71,6 +75,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
+    @Step("Редактирование категории")
     public @Nullable CategoryJson updateCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
@@ -84,10 +89,12 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
+    @Step("Удаление категории")
     public void removeCategory(CategoryJson category) {
         throw new UnsupportedOperationException("Невозможно удалить категорию через АПИ");
     }
 
+    @Step("Получить трату для пользователя {username} c id {id}")
     public @Nullable SpendJson getSpend(UUID id, String username) {
         final Response<SpendJson> response;
         try {
@@ -100,6 +107,7 @@ public class SpendApiClient implements SpendClient {
         return response.body();
     }
 
+    @Step("Получить все траты для пользователя {username}")
     public @Nonnull List<SpendJson> getAllSpends(String username,
                                                  @Nullable CurrencyValues filterCurrency,
                                                  @Nullable Date from,
@@ -117,6 +125,7 @@ public class SpendApiClient implements SpendClient {
                 : Collections.emptyList();
     }
 
+    @Step("Удалить траты для пользователя {username} c id {ids}")
     public void removeSpends(String username, List<UUID> ids) {
         final Response<SpendJson> response;
         try {
@@ -128,6 +137,7 @@ public class SpendApiClient implements SpendClient {
         assertEquals(200, response.code());
     }
 
+    @Step("Получить все категории с статусе archived = {excludeArchived}")
     public @Nonnull List<CategoryJson> getAllCategories(boolean excludeArchived) {
         final Response<List<CategoryJson>> response;
         try {

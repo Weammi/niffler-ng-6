@@ -1,18 +1,19 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
-import static org.openqa.selenium.Keys.ENTER;
 
 public class PeoplePage {
 
     private final SelenideElement peopleTab = $("a[href='/people/friends']");
     private final SelenideElement allTab = $("a[href='/people/all']");
     private final SelenideElement peopleTable = $("#all");
-    private final SelenideElement searchInput = $("input[type='text']");
+
+    public SearchField searchField = new SearchField();
 
     @Step("Отображается отправленная заявка в друзья для пользователя - {username}")
     public PeoplePage checkInvitationSentToUser(String username) {
@@ -21,10 +22,9 @@ public class PeoplePage {
         return this;
     }
 
-    @Step("Ввести в поле поиска - {username}")
-    public PeoplePage setSearch(String username) {
-        searchInput.sendKeys(username);
-        searchInput.sendKeys(ENTER);
+    @Step("Ввести в поле поиска - {name}")
+    public PeoplePage setSearch(String name) {
+        searchField.setSearch(name);
         return this;
     }
 }

@@ -12,6 +12,7 @@ import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibe
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.spend.CurrencyValues;
+import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -32,6 +33,7 @@ public class UsersDbClient implements UsersClient {
             CFG.userdataJdbcUrl());
 
     @Override
+    @Step("Создать пользователя с логином {username} и паролем {password}")
     public UserJson createUser(String username, String password) {
         return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = authUserEntity(username, password);
@@ -45,6 +47,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить в друзья пользователем {required.username} пользователя {UserJson.username}")
     public void addFriend(UserJson required, UserJson addressee) {
         xaTransactionTemplate.execute(() -> {
             userdataUserRepositoryHibernate.addFriend(
@@ -56,6 +59,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Пользователю {targetUser.username} добавить друзей в кол-ве {count}")
     public void addFriend(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = userdataUserRepositoryHibernate.findById(
@@ -80,6 +84,8 @@ public class UsersDbClient implements UsersClient {
         }
     }
 
+    @Step("Добавление входящих приглашений в друзья" +
+            "от пользователя {addressee.username} пользователю: {required.username}")
     public void sendInvitation(UserJson required, UserJson addressee) {
         xaTransactionTemplate.execute(() -> {
             userdataUserRepositoryHibernate.sendInvitation(
@@ -90,6 +96,7 @@ public class UsersDbClient implements UsersClient {
         });
     }
 
+    @Step("Добавление {count} входящих приглашений в друзья пользователю: {targetUser.username}")
     public void sendInvitation(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = userdataUserRepositoryHibernate.findById(

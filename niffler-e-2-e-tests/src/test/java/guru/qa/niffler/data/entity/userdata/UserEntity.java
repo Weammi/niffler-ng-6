@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Stream;
@@ -51,7 +52,7 @@ public class UserEntity implements Serializable {
     @OneToMany(mappedBy = "addressee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FriendshipEntity> friendshipAddressees = new ArrayList<>();
 
-    public static UserEntity fromJson(UserJson json) {
+    public static @Nonnull UserEntity fromJson(@Nonnull UserJson json) {
         UserEntity ue = new UserEntity();
         ue.setId(json.id());
         ue.setUsername(json.username());
