@@ -6,11 +6,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
 
+@ParametersAreNonnullByDefault
 public class UserApiClient {
 
     private final UserApi userApi;
@@ -24,7 +28,7 @@ public class UserApiClient {
         this.userApi = retrofit.create(UserApi.class);
     }
 
-    public UserJson getCurrentUser(String username) throws IOException {
+    public @Nullable UserJson getCurrentUser(String username) throws IOException {
         Response<UserJson> response = userApi.getCurrentUser(username).execute();
         if (response.isSuccessful() && response.body() != null) {
             return response.body();
@@ -33,7 +37,7 @@ public class UserApiClient {
         }
     }
 
-    public UserJson updateUser(UserJson user) throws IOException {
+    public @Nullable UserJson updateUser(UserJson user) throws IOException {
         Response<UserJson> response = userApi.updateUser(user).execute();
         if (response.isSuccessful() && response.body() != null) {
             return response.body();
@@ -42,25 +46,29 @@ public class UserApiClient {
         }
     }
 
-    public List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
+    public @Nullable List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
         Response<List<UserJson>> response = userApi.getAllUsers(username, searchQuery).execute();
         if (response.isSuccessful() && response.body() != null) {
-            return response.body();
+            return response.body() != null
+                    ? response.body()
+                    : Collections.emptyList();
         } else {
             throw new IOException("Ошибка при получении пользователей");
         }
     }
 
-    public List<UserJson> getFriends(String username, String searchQuery) throws IOException {
+    public @Nullable List<UserJson> getFriends(String username, String searchQuery) throws IOException {
         Response<List<UserJson>> response = userApi.getFriends(username, searchQuery).execute();
         if (response.isSuccessful() && response.body() != null) {
-            return response.body();
+            return response.body() != null
+                    ? response.body()
+                    : Collections.emptyList();
         } else {
             throw new IOException("Ошибка при получении друзей для пользователя - " + username);
         }
     }
 
-    public UserJson sendInvitation(String username, String targetUsername) throws IOException {
+    public @Nullable UserJson sendInvitation(String username, String targetUsername) throws IOException {
         Response<UserJson> response = userApi.sendInvitation(username, targetUsername).execute();
         if (response.isSuccessful() && response.body() != null) {
             return response.body();
@@ -70,7 +78,7 @@ public class UserApiClient {
         }
     }
 
-    public UserJson declineInvitation(String username, String targetUsername) throws IOException {
+    public @Nullable UserJson declineInvitation(String username, String targetUsername) throws IOException {
         Response<UserJson> response = userApi.declineInvitation(username, targetUsername).execute();
         if (response.isSuccessful() && response.body() != null) {
             return response.body();

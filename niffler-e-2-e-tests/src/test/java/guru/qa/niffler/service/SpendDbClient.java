@@ -8,6 +8,7 @@ import guru.qa.niffler.data.repository.impl.hibernate.SpendRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.spend.CategoryJson;
 import guru.qa.niffler.model.spend.SpendJson;
+import io.qameta.allure.Step;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class SpendDbClient implements SpendClient {
             CFG.spendJdbcUrl());
 
     @Override
+    @Step("Создание новой траты")
     public SpendJson createSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -38,6 +40,7 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    @Step("Обновить трату")
     public SpendJson updateSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -46,6 +49,7 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
+    @Step("Найти трату по id {id}")
     public Optional<SpendJson> findSpendById(UUID id) {
         return xaTransactionTemplate.execute(() -> {
             Optional<SpendEntity> optionalSpendEntity = spendRepository.findById(id);
@@ -53,6 +57,7 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
+    @Step("Найти трату для пользователя {username} с описанием {description}")
     public List<SpendJson> findSpendByUsernameAndDescription(String username, String description) {
         return xaTransactionTemplate.execute(() -> {
             List<SpendEntity> spendEntities = spendRepository.findByUsernameAndSpendDescription(username, description);
@@ -63,6 +68,7 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    @Step("Создание новой категории")
     public CategoryJson createCategory(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
@@ -71,6 +77,7 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    @Step("Обновить категорию")
     public CategoryJson updateCategory(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
@@ -79,6 +86,7 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
+    @Step("Найти категорию по id {id}")
     public Optional<CategoryJson> findCategoryById(UUID id) {
         return xaTransactionTemplate.execute(() -> {
             Optional<CategoryEntity> optionalCategoryEntity = spendRepository.findCategoryById(id);
@@ -86,6 +94,7 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
+    @Step("Найти категорию по имени пользователя {username} и названию {name}")
     public Optional<CategoryJson> findCategoryByUsernameAndCategoryName(String username, String name) {
         return xaTransactionTemplate.execute(() -> {
             Optional<CategoryEntity> optionalCategoryEntity =
@@ -94,6 +103,7 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
+    @Step("Удаление траты")
     public void removeSpend(SpendJson spend) {
         xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -103,6 +113,7 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    @Step("Удаление категории")
     public void removeCategory(CategoryJson category) {
         xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
