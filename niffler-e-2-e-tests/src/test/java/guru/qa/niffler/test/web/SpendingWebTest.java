@@ -9,7 +9,7 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.spend.SpendJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
-import guru.qa.niffler.service.UsersDbClient;
+import guru.qa.niffler.service.impl.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;

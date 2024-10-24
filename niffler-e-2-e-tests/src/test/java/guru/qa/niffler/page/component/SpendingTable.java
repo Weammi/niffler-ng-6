@@ -14,13 +14,12 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class SpendingTable {
 
-    private final SelenideElement spends = $(".MuiTableContainer-root");
     private static final ElementsCollection timePeriods = $$("[role='option']");
-    private final SelenideElement deleteButton = $("#delete");
-
     private static final String deleteConfirmButton = ".MuiDialogActions-spacing [type='button']:nth-child(2)";
     private static final String spendingRow = "tbody tr";
     private static final String spendingColumn = "td:nth-child(4)";
+    private final SelenideElement spends = $(".MuiTableContainer-root");
+    private final SelenideElement deleteButton = $("#delete");
 
     @Step("Выбор периода для отображения трат: {period}")
     public SpendingTable selectPeriod(String period) {

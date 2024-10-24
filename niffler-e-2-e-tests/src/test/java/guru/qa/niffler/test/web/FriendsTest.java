@@ -5,7 +5,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.service.UsersDbClient;
+import guru.qa.niffler.service.impl.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
@@ -66,17 +66,22 @@ class FriendsTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickFriends()
+                .header.clickAvatar()
+                .clickFriends()
                 .acceptFriend()
                 .shouldHaveMyFriendsListHeader()
                 .checkUnfriendButtonIsVisible();
     }
 
     @Test
-    void declineInvitation(UserJson user) {
+    void declineInvitation() {
+        UserJson user = usersDbClient.createUser(randomUsername(), randomPassword());
+        usersDbClient.sendInvitation(user, 1);
+
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickFriends()
+                .header.clickAvatar()
+                .clickFriends()
                 .declineFriend()
                 .shouldHaveEmptyFriendsTable();
     }
