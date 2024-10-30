@@ -24,9 +24,9 @@ class FriendsTest {
     void friendShouldBePresentInFriendTable(@UserType(WITH_FRIEND) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickFriends()
-                .setSearch("weammi3")
+                .getSearch().setSearch("weammi3")
                 .friendIsDisplayInFriendsList("weammi3");
     }
 
@@ -34,7 +34,7 @@ class FriendsTest {
     void friendsTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickFriends()
                 .friendTableIsEmpty();
     }
@@ -43,9 +43,9 @@ class FriendsTest {
     void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickFriends()
-                .setSearch("weammi5")
+                .getSearch().setSearch("weammi5")
                 .friendIsDisplayInRequestsList("weammi5");
     }
 
@@ -53,9 +53,9 @@ class FriendsTest {
     void outcomeInvitationBePresentInAllPeopleTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickAllPeople()
-                .setSearch("weammi5")
+                .getSearch().setSearch("weammi5")
                 .friendInvitationSent("weammi5");
     }
 
@@ -66,7 +66,7 @@ class FriendsTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickFriends()
                 .acceptFriend()
                 .shouldHaveMyFriendsListHeader()
@@ -80,7 +80,7 @@ class FriendsTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickFriends()
                 .declineFriend()
                 .shouldHaveEmptyFriendsTable();

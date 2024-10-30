@@ -8,9 +8,6 @@ import java.util.List;
 
 public interface UserApi {
 
-    @POST("/register")
-    Call<UserJson> registerUser(@Body UserJson user);
-
     @GET("/internal/users/current")
     Call<UserJson> getCurrentUser(@Query("username") String username);
 

@@ -8,7 +8,7 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
 
     private final String muiChecked = ("Mui-checked");
     private final SelenideElement usernameInput = $("#username");
@@ -19,8 +19,6 @@ public class ProfilePage {
     private final ElementsCollection activeCategoryText = $$("span[class*='MuiChip-labelMedium']");
     private final ElementsCollection archiveCategoryText = $$("[class*='MuiChip-colorDefault'] span[class*='MuiChip-labelMedium']");
     private final SelenideElement successSaveChangesMessage = $x("//div[text()='Profile successfully updated']");
-
-    public Header header = new Header();
 
     @Step("Ввести username - {userName}")
     public ProfilePage setUsername(String userName) {

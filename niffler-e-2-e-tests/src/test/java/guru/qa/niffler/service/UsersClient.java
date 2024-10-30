@@ -2,9 +2,11 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.model.UserJson;
 
+import java.io.IOException;
+
 public interface UsersClient {
 
-    UserJson createUser(String username, String password);
+    UserJson createUser(String username, String password) throws IOException, InterruptedException;
 
     void sendInvitation(UserJson required, UserJson addressee);
 

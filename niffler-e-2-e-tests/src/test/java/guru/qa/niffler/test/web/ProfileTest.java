@@ -34,7 +34,7 @@ class ProfileTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickProfile()
                 .clickShowArchive()
                 .checkArchiveCategoryIsDisplay(category.name());
@@ -51,7 +51,7 @@ class ProfileTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickProfile()
                 .checkActiveCategoryIsDisplay(category.name());
     }
@@ -63,7 +63,7 @@ class ProfileTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickProfile()
                 .setName(name)
                 .clickSaveBtn()

@@ -1,21 +1,22 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.AllPeoplePage;
-import guru.qa.niffler.page.EditSpendingPage;
-import guru.qa.niffler.page.FriendsPage;
-import guru.qa.niffler.page.ProfilePage;
+import guru.qa.niffler.page.*;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class Header {
+public class Header<T extends BasePage<?>> extends BaseComponent<T> {
 
     private final SelenideElement avatarBtn = $("[aria-label='Menu']");
     private final SelenideElement profile = $("[href='/profile']");
     private final SelenideElement friends = $("[href='/people/friends']");
     private final SelenideElement allPeople = $("[href='/people/all']");
     private final SelenideElement spending = $("[href='/spending']");
+
+    public Header(SelenideElement self, T page) {
+        super(self, page);
+    }
 
     @Step("Нажать на иконку аватара")
     public Header clickAvatar() {
