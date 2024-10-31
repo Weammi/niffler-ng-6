@@ -9,7 +9,6 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.spend.SpendJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
-import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -17,13 +16,13 @@ import java.util.Date;
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.EMPTY;
-import static guru.qa.niffler.utils.RandomDataUtils.*;
+import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
+import static guru.qa.niffler.utils.RandomDataUtils.randomSentence;
 
 @WebTest
 class SpendingWebTest {
 
     private static final Config CFG = Config.getInstance();
-    private final UsersDbClient usersDbClient = new UsersDbClient();
 
     @User(
             username = "weammi1",
@@ -42,26 +41,29 @@ class SpendingWebTest {
                 .login(user.username(), user.password())
                 .editSpending(spend.description())
                 .setNewSpendingDescription(newDescription)
-                .save();
+                .save()
+                .checkAlert("New spending is successfully created");
 
         new MainPage()
-                .setSearch(newDescription)
+                .getSearch().setSearch(newDescription)
                 .checkThatTableContainsSpending(newDescription);
     }
 
+    @User
     @Test
-    void addSpend() {
-        UserJson user = usersDbClient.createUser(randomUsername(), randomPassword());
+    void addSpend(UserJson user) {
         String category = randomCategoryName();
         String description = randomSentence(2);
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickNewSpending()
+                .getHeader().clickNewSpending()
                 .setSpendingCategory(category)
                 .setNewSpendingDescription(description)
                 .setSpendingAmount("10")
-                .calendar.selectDateInCalendar(new Date());
+                .getCalendar().selectDateInCalendar(new Date())
+                .checkAlert("New spending is successfully created");
+
         new MainPage().checkThatTableContainsSpending(description);
     }
 }

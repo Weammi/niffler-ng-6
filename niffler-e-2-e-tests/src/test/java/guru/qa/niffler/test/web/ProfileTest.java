@@ -8,7 +8,7 @@ import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.spend.CategoryJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.service.UsersDbClient;
+import guru.qa.niffler.service.impl.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
@@ -34,7 +34,7 @@ class ProfileTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickProfile()
                 .clickShowArchive()
                 .checkArchiveCategoryIsDisplay(category.name());
@@ -51,7 +51,7 @@ class ProfileTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .header.clickAvatar()
+                .getHeader().clickAvatar()
                 .clickProfile()
                 .checkActiveCategoryIsDisplay(category.name());
     }
@@ -63,7 +63,8 @@ class ProfileTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .header.clickProfile()
+                .getHeader().clickAvatar()
+                .clickProfile()
                 .setName(name)
                 .clickSaveBtn()
                 .shouldBeVisibleSaveChangesSuccessMessage()

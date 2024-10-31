@@ -2,7 +2,6 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.CollectionCondition.size;
@@ -11,7 +10,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 
-public class FriendsPage {
+public class FriendsPage extends BasePage<FriendsPage> {
 
     private final ElementsCollection friendsTable = $$("#friends tr");
     private final ElementsCollection requestsTable = $$("#requests tr");
@@ -22,8 +21,6 @@ public class FriendsPage {
     private final SelenideElement unfriendButton = $("button[class*='MuiButton-containedSecondary']");
     private final SelenideElement myFriendsListHeader = $x("//h2[text()='My friends']");
     private final SelenideElement emptyFriends = $x("//p[text()='There are no users yet']");
-
-    public SearchField searchField = new SearchField();
 
     @Step("В таблице друзей отображается пользователь - {name}")
     public FriendsPage friendIsDisplayInFriendsList(String name) {
@@ -40,12 +37,6 @@ public class FriendsPage {
     @Step("В таблице заявок в друзья отображается пользователь - {name}")
     public FriendsPage friendIsDisplayInRequestsList(String name) {
         requestsTable.find(text(name)).shouldBe(visible);
-        return this;
-    }
-
-    @Step("Ввести в поле поиска - {name}")
-    public FriendsPage setSearch(String name) {
-        searchField.setSearch(name);
         return this;
     }
 

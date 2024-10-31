@@ -1,98 +1,113 @@
 package guru.qa.niffler.api;
 
-import guru.qa.niffler.config.Config;
+import com.google.common.base.Stopwatch;
+import guru.qa.niffler.api.core.RestClient;
+import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.UsersClient;
+import io.qameta.allure.Step;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static java.lang.String.format;
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
-public class UserApiClient {
+public class UserApiClient extends RestClient implements UsersClient {
 
     private final UserApi userApi;
+    private final AuthApiClient authApiClient = new AuthApiClient();
 
     public UserApiClient() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Config.getInstance().userdataUrl())
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build();
-
+        super(CFG.userdataUrl());
         this.userApi = retrofit.create(UserApi.class);
     }
 
-    public @Nullable UserJson getCurrentUser(String username) throws IOException {
-        Response<UserJson> response = userApi.getCurrentUser(username).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            return response.body();
-        } else {
-            throw new IOException("Ошибка при получении пользователя - " + username);
+    @Override
+    @Step("Создать пользователя с именем {username} и паролем {password}")
+    public @Nullable UserJson createUser(String username, String password) {
+        Stopwatch sw = Stopwatch.createStarted();
+
+        authApiClient.requestRegisterForm();
+        authApiClient.registerUser(
+                username,
+                password,
+                password,
+                ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
+        );
+
+        while (sw.elapsed(TimeUnit.MILLISECONDS) < 10_000L) {
+            try {
+                UserJson userJson = userApi.getCurrentUser(username).execute().body();
+                if (userJson != null && userJson.id() != null) {
+                    return userJson;
+                } else {
+                    Thread.sleep(100);
+                }
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException("Ошибка при выполнении запроса на получение пользователя или ожидании", e);
+            }
+        }
+        throw new AssertionError("Пользователь не был найден в системе после истечения времени ожидания");
+    }
+
+    @Override
+    @Step("Отправка приглашения от пользователя {user.username} пользователю {targetUser.username}")
+    public void sendInvitation(@Nonnull UserJson user, @Nonnull UserJson targetUser) {
+        final Response<UserJson> response;
+        try {
+            response = userApi.sendInvitation(user.username(), targetUser.username())
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+    }
+
+    @Override
+    @Step("Пользователю {targetUser.username} отправить {count} приглашений в друзья")
+    public void sendInvitation(UserJson targetUser, int count) {
+        if (count != 0) {
+            UserJson newUser;
+            for (int i = 0; i < count; i++) {
+                newUser = createUser(randomUsername(), "12345");
+                sendInvitation(newUser, targetUser);
+            }
         }
     }
 
-    public @Nullable UserJson updateUser(UserJson user) throws IOException {
-        Response<UserJson> response = userApi.updateUser(user).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            return response.body();
-        } else {
-            throw new IOException("Ошибка при обновлении пользователя - " + user.username());
+    @Step("Принятие приглашения от пользователя {user.username} пользователем {targetUser.username}")
+    public void acceptInvitation(@Nonnull UserJson user, @Nonnull UserJson targetUser) {
+        final Response<UserJson> response;
+        try {
+            response = userApi.acceptInvitation(user.username(), targetUser.username())
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
         }
+        assertEquals(200, response.code());
     }
 
-    public @Nullable List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
-        Response<List<UserJson>> response = userApi.getAllUsers(username, searchQuery).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            return response.body() != null
-                    ? response.body()
-                    : Collections.emptyList();
-        } else {
-            throw new IOException("Ошибка при получении пользователей");
-        }
+    @Override
+    @Step("Добавить в друзья пользователя {user.username} пользователю {targetUsername.username}")
+    public void addFriend(UserJson user, UserJson targetUsername) {
+        sendInvitation(user, targetUsername);
+        acceptInvitation(user, targetUsername);
     }
 
-    public @Nullable List<UserJson> getFriends(String username, String searchQuery) throws IOException {
-        Response<List<UserJson>> response = userApi.getFriends(username, searchQuery).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            return response.body() != null
-                    ? response.body()
-                    : Collections.emptyList();
-        } else {
-            throw new IOException("Ошибка при получении друзей для пользователя - " + username);
-        }
-    }
-
-    public @Nullable UserJson sendInvitation(String username, String targetUsername) throws IOException {
-        Response<UserJson> response = userApi.sendInvitation(username, targetUsername).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            return response.body();
-        } else {
-            throw new IOException(format("Ошибка при добавлении в друзья пользователем %s пользователя %s ",
-                    username, targetUsername));
-        }
-    }
-
-    public @Nullable UserJson declineInvitation(String username, String targetUsername) throws IOException {
-        Response<UserJson> response = userApi.declineInvitation(username, targetUsername).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            return response.body();
-        } else {
-            throw new IOException(format("Ошибка при отклонении дружбы пользователем %s пользователя %s ",
-                    username, targetUsername));
-        }
-    }
-
-    public void removeFriend(String username, String targetUsername) throws IOException {
-        Response<Void> response = userApi.removeFriend(username, targetUsername).execute();
-        if (!response.isSuccessful()) {
-            throw new IOException(format("Ошибка при удалении друга пользователем %s пользователя %s ",
-                    username, targetUsername));
+    @Override
+    public void addFriend(UserJson targetUser, int count) {
+        if (count != 0) {
+            UserJson newUser;
+            for (int i = 0; i < count; i++) {
+                newUser = createUser(randomUsername(), "12345");
+                addFriend(newUser, targetUser);
+            }
         }
     }
 }

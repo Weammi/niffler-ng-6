@@ -10,17 +10,21 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class CategoryDaoSpringJdbc implements CategoryDao {
 
     private static final Config CFG = Config.getInstance();
 
     @Override
+    @Nonnull
     public CategoryEntity create(CategoryEntity category) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -42,6 +46,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     }
 
     @Override
+    @Nonnull
     public Optional<CategoryEntity> findById(UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
         try {
@@ -58,6 +63,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     }
 
     @Override
+    @Nonnull
     public Optional<CategoryEntity> findByUsernameAndCategoryName(String username, String categoryName) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
         return Optional.ofNullable(
@@ -70,6 +76,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     }
 
     @Override
+    @Nonnull
     public List<CategoryEntity> findAll() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
         return jdbcTemplate.query("SELECT * FROM category", CategoryEntityRowMapper.instance);

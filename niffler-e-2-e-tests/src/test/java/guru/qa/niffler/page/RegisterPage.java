@@ -7,7 +7,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-public class RegisterPage {
+public class RegisterPage extends BasePage<RegisterPage> {
 
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement passwordInput = $("#password");

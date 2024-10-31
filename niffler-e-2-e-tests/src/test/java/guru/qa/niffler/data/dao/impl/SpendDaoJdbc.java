@@ -6,6 +6,8 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.model.spend.CurrencyValues;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,11 +19,14 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class SpendDaoJdbc implements SpendDao {
 
     private static final Config CFG = Config.getInstance();
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public SpendEntity create(SpendEntity spend) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"spend\" (username, spend_date, currency, amount, description, category_id) " +
@@ -54,6 +59,8 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public Optional<SpendEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM spend WHERE id = ?"
@@ -82,6 +89,8 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public List<SpendEntity> findSpendByUsernameAndDescription(String userName, String description) {
         List<SpendEntity> spends = new ArrayList<>();
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -109,6 +118,8 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public List<SpendEntity> findAll() {
         List<SpendEntity> spendList = new ArrayList<>();
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -135,6 +146,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void remove(SpendEntity spend) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"spend\" WHERE id = ?"
@@ -147,6 +159,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void deleteAllByCategoryId(UUID id) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM spend WHERE category_id = ?"

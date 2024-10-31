@@ -5,6 +5,8 @@ import guru.qa.niffler.data.dao.UserdataUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.spend.CurrencyValues;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,11 +17,14 @@ import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.ACCEPTED;
 import static guru.qa.niffler.data.entity.userdata.FriendshipStatus.PENDING;
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class UserdataUserDaoJdbc implements UserdataUserDao {
 
     private static final Config CFG = Config.getInstance();
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public UserEntity create(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, currency, firstname, surname, full_name, photo, photo_small) " +
@@ -53,6 +58,8 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public UserEntity update(UserEntity user) {
         try (PreparedStatement usersPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "UPDATE \"user\" " +
@@ -76,6 +83,8 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM user WHERE id = ?"
@@ -106,6 +115,8 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public Optional<UserEntity> findByUsername(String username) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM user WHERE username = ?"
@@ -136,6 +147,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void remove(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
@@ -148,6 +160,8 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public List<UserEntity> findAll() {
         List<UserEntity> userDaoList = new ArrayList<>();
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement("SELECT * FROM")) {
@@ -172,6 +186,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void sendInvitation(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"friendship\" (requester_id, addressee_id, status, created_date) " +
@@ -188,6 +203,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void addFriend(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"friendship\" (requester_id, addressee_id, status, created_date) " +

@@ -2,6 +2,7 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.BasePage;
 import guru.qa.niffler.page.EditSpendingPage;
 import io.qameta.allure.Step;
 
@@ -12,15 +13,18 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class SpendingTable {
+public class SpendingTable<T extends BasePage<?>> extends BaseComponent<T>  {
 
-    private final SelenideElement spends = $(".MuiTableContainer-root");
     private static final ElementsCollection timePeriods = $$("[role='option']");
-    private final SelenideElement deleteButton = $("#delete");
-
     private static final String deleteConfirmButton = ".MuiDialogActions-spacing [type='button']:nth-child(2)";
     private static final String spendingRow = "tbody tr";
     private static final String spendingColumn = "td:nth-child(4)";
+    private final SelenideElement spends = $(".MuiTableContainer-root");
+    private final SelenideElement deleteButton = $("#delete");
+
+    public SpendingTable(SelenideElement self, T page) {
+        super(self, page);
+    }
 
     @Step("Выбор периода для отображения трат: {period}")
     public SpendingTable selectPeriod(String period) {

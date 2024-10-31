@@ -4,6 +4,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,11 +17,14 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class CategoryDaoJdbc implements CategoryDao {
 
     private static final Config CFG = Config.getInstance();
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public CategoryEntity create(CategoryEntity category) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO category (name, username, archived) " +
@@ -49,6 +54,8 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public Optional<CategoryEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM category WHERE id = ?"
@@ -73,6 +80,8 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public Optional<CategoryEntity> findByUsernameAndCategoryName(String username, String categoryName) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM category WHERE username = ? AND name = ?"
@@ -97,6 +106,8 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
 
     @Override
+    @Nonnull
+    @SuppressWarnings("resource")
     public List<CategoryEntity> findAll() {
         List<CategoryEntity> categoryList = new ArrayList<>();
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -119,7 +130,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         }
     }
 
-    @Override
+    @SuppressWarnings("resource")
     public void remove(CategoryEntity category) {
         try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM category WHERE id = ?"

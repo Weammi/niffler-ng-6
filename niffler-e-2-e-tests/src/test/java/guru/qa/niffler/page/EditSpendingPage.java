@@ -1,19 +1,16 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.component.Calendar;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage {
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
     private final SelenideElement descriptionInput = $("#description");
     private final SelenideElement saveBtn = $("#save");
     private final SelenideElement amountInput = $("#amount");
     private final SelenideElement categoryInput = $("#category");
-
-    public Calendar calendar = new Calendar();
 
     @Step("Ввести в поле \"Description\" текст - {description}")
     public EditSpendingPage setNewSpendingDescription(String description) {
@@ -23,8 +20,9 @@ public class EditSpendingPage {
     }
 
     @Step("Нажать кнопку \"Save Changes\"")
-    public void save() {
+    public MainPage save() {
         saveBtn.click();
+        return new MainPage();
     }
 
     @Step("Ввести стоимость траты: {amount}")

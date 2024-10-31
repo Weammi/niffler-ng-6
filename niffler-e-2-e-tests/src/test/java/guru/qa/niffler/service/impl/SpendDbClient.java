@@ -1,4 +1,4 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
@@ -8,13 +8,17 @@ import guru.qa.niffler.data.repository.impl.hibernate.SpendRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.spend.CategoryJson;
 import guru.qa.niffler.model.spend.SpendJson;
+import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
 
+@ParametersAreNonnullByDefault
 public class SpendDbClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
@@ -27,7 +31,7 @@ public class SpendDbClient implements SpendClient {
     @Override
     @Step("Создание новой траты")
     public SpendJson createSpend(SpendJson spend) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
             if (spendEntity.getCategory().getId() != null) {
                 spendEntity.setCategory(spendRepository.updateCategory(spendEntity.getCategory()));
@@ -36,7 +40,7 @@ public class SpendDbClient implements SpendClient {
                 spendEntity.setCategory(categoryEntity);
             }
             return SpendJson.fromEntity(spendRepository.create(spendEntity));
-        });
+        }));
     }
 
     @Override
@@ -70,10 +74,10 @@ public class SpendDbClient implements SpendClient {
     @Override
     @Step("Создание новой категории")
     public CategoryJson createCategory(CategoryJson category) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
             return CategoryJson.fromEntity(spendRepository.createCategory(categoryEntity));
-        });
+        }));
     }
 
     @Override
