@@ -1,8 +1,9 @@
 package guru.qa.niffler.api;
 
-import com.google.common.base.Stopwatch;
-import guru.qa.niffler.api.core.RestClient;
+import guru.qa.niffler.api.core.RestClient.EmptyClient;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.config.Config;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import io.qameta.allure.Step;
@@ -12,48 +13,41 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
-public class UserApiClient extends RestClient implements UsersClient {
+public class UserApiClient implements UsersClient {
 
-    private final UserApi userApi;
-    private final AuthApiClient authApiClient = new AuthApiClient();
+    private static final Config CFG = Config.getInstance();
+    private static final String defaultPassword = "12345";
 
-    public UserApiClient() {
-        super(CFG.userdataUrl());
-        this.userApi = retrofit.create(UserApi.class);
-    }
+    private final AuthApi authApi = new EmptyClient(CFG.authUrl()).create(AuthApi.class);
+    private final UserdataApi userdataApi = new EmptyClient(CFG.userdataUrl()).create(UserdataApi.class);
 
     @Override
     @Step("Создать пользователя с именем {username} и паролем {password}")
     public @Nullable UserJson createUser(String username, String password) {
-        Stopwatch sw = Stopwatch.createStarted();
+        try {
+            authApi.requestRegister().execute();
+            authApi.registerUser(
+                    username,
+                    password,
+                    password,
+                    ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
+            ).execute();
 
-        authApiClient.requestRegisterForm();
-        authApiClient.registerUser(
-                username,
-                password,
-                password,
-                ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
-        );
-
-        while (sw.elapsed(TimeUnit.MILLISECONDS) < 10_000L) {
-            try {
-                UserJson userJson = userApi.getCurrentUser(username).execute().body();
-                if (userJson != null && userJson.id() != null) {
-                    return userJson;
-                } else {
-                    Thread.sleep(100);
-                }
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException("Ошибка при выполнении запроса на получение пользователя или ожидании", e);
-            }
+            UserJson userJson = requireNonNull(userdataApi.getCurrentUser(username).execute().body());
+            return userJson.addTestData(
+                    new TestData(
+                            password
+                    )
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при выполнении запроса на получение пользователя или ожидании", e);
         }
-        throw new AssertionError("Пользователь не был найден в системе после истечения времени ожидания");
     }
 
     @Override
@@ -61,7 +55,7 @@ public class UserApiClient extends RestClient implements UsersClient {
     public void sendInvitation(@Nonnull UserJson user, @Nonnull UserJson targetUser) {
         final Response<UserJson> response;
         try {
-            response = userApi.sendInvitation(user.username(), targetUser.username())
+            response = userdataApi.sendInvitation(user.username(), targetUser.username())
                     .execute();
         } catch (IOException e) {
             throw new AssertionError(e);
@@ -71,42 +65,102 @@ public class UserApiClient extends RestClient implements UsersClient {
 
     @Override
     @Step("Пользователю {targetUser.username} отправить {count} приглашений в друзья")
-    public void sendInvitation(UserJson targetUser, int count) {
-        if (count != 0) {
-            UserJson newUser;
+    public void addIncomeInvitation(UserJson targetUser, int count) {
+        if (count > 0) {
             for (int i = 0; i < count; i++) {
-                newUser = createUser(randomUsername(), "12345");
-                sendInvitation(newUser, targetUser);
+                final String username = randomUsername();
+                final Response<UserJson> response;
+                final UserJson newUser;
+                try {
+                    newUser = createUser(username, defaultPassword);
+
+                    response = userdataApi.sendInvitation(
+                            newUser.username(),
+                            targetUser.username()
+                    ).execute();
+                } catch (IOException e) {
+                    throw new AssertionError(e);
+                }
+                assertEquals(200, response.code());
+
+                targetUser.testData()
+                        .incomeInvitations()
+                        .add(newUser);
             }
         }
     }
 
-    @Step("Принятие приглашения от пользователя {user.username} пользователем {targetUser.username}")
-    public void acceptInvitation(@Nonnull UserJson user, @Nonnull UserJson targetUser) {
-        final Response<UserJson> response;
-        try {
-            response = userApi.acceptInvitation(user.username(), targetUser.username())
-                    .execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
+    @Override
+    @Step("Пользователю {targetUser.username} отправить {count} приглашений в друзья")
+    public void addOutcomeInvitation(UserJson targetUser, int count) {
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                final String username = randomUsername();
+                final Response<UserJson> response;
+                final UserJson newUser;
+                try {
+                    newUser = createUser(username, defaultPassword);
+
+                    response = userdataApi.sendInvitation(
+                            targetUser.username(),
+                            newUser.username()
+                    ).execute();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                assertEquals(200, response.code());
+
+                targetUser.testData()
+                        .outcomeInvitations()
+                        .add(newUser);
+            }
         }
-        assertEquals(200, response.code());
     }
 
     @Override
     @Step("Добавить в друзья пользователя {user.username} пользователю {targetUsername.username}")
     public void addFriend(UserJson user, UserJson targetUsername) {
-        sendInvitation(user, targetUsername);
-        acceptInvitation(user, targetUsername);
+        final Response<UserJson> response;
+        try {
+            userdataApi.sendInvitation(
+                    user.username(),
+                    targetUsername.username()
+            ).execute();
+            response = userdataApi.acceptInvitation(targetUsername.username(), user.username()).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals(200, response.code());
+
+        targetUsername.testData()
+                .friends()
+                .add(response.body());
     }
 
     @Override
+    @Step("Добавить в друзья пользователю {targetUser.username} пользователей {count} штук")
     public void addFriend(UserJson targetUser, int count) {
-        if (count != 0) {
-            UserJson newUser;
+        if (count > 0) {
             for (int i = 0; i < count; i++) {
-                newUser = createUser(randomUsername(), "12345");
-                addFriend(newUser, targetUser);
+                final String username = randomUsername();
+                final Response<UserJson> response;
+                try {
+                    userdataApi.sendInvitation(
+                            createUser(
+                                    username,
+                                    defaultPassword
+                            ).username(),
+                            targetUser.username()
+                    ).execute();
+                    response = userdataApi.acceptInvitation(targetUser.username(), username).execute();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                assertEquals(200, response.code());
+
+                targetUser.testData()
+                        .friends()
+                        .add(response.body());
             }
         }
     }

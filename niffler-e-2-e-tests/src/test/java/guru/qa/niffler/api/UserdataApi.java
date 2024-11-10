@@ -6,7 +6,7 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface UserApi {
+public interface UserdataApi {
 
     @GET("/internal/users/current")
     Call<UserJson> getCurrentUser(@Query("username") String username);
