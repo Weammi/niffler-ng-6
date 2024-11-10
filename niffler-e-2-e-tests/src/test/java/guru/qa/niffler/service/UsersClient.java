@@ -6,11 +6,13 @@ import java.io.IOException;
 
 public interface UsersClient {
 
-    UserJson createUser(String username, String password) throws IOException, InterruptedException;
+    UserJson createUser(String username, String password);
 
     void sendInvitation(UserJson required, UserJson addressee);
 
-    void sendInvitation(UserJson targetUser, int count);
+    void addIncomeInvitation(UserJson targetUser, int count);
+
+    void addOutcomeInvitation(UserJson targetUser, int count);
 
     void addFriend(UserJson required, UserJson addressee);
 

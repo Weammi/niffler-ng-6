@@ -10,6 +10,7 @@ import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
+import guru.qa.niffler.model.FriendState;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.spend.CurrencyValues;
 import guru.qa.niffler.service.UsersClient;
@@ -20,16 +21,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
-import java.util.Objects;
 
-import static guru.qa.niffler.utils.RandomDataUtils.randomPassword;
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static java.util.Objects.requireNonNull;
 
 @ParametersAreNonnullByDefault
 public class UsersDbClient implements UsersClient {
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private static final String defaultPassword = "12345";
 
     private final AuthUserRepository authUserRepositoryHibernate = new AuthUserRepositoryHibernate();
     private final UserdataUserRepository userdataUserRepositoryHibernate = new UserdataUserRepositoryHibernate();
@@ -41,7 +42,7 @@ public class UsersDbClient implements UsersClient {
     @Override
     @Step("Создать пользователя с логином {username} и паролем {password}")
     public UserJson createUser(String username, String password) {
-        return Objects.requireNonNull(
+        return requireNonNull(
                 xaTransactionTemplate.execute(
                         () -> UserJson.fromEntity(
                                 createNewUser(username, password),
@@ -72,19 +73,24 @@ public class UsersDbClient implements UsersClient {
             ).orElseThrow();
 
             for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                            String username = randomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
-                            authUserRepositoryHibernate.create(authUser);
-                            UserEntity adressee = userdataUserRepositoryHibernate.create(userEntity(username));
-
-                            userdataUserRepositoryHibernate.sendInvitation(targetEntity, adressee);
-                            userdataUserRepositoryHibernate.sendInvitation(adressee, targetEntity);
-
-                            userdataUserRepositoryHibernate.addFriend(targetEntity, adressee);
-                            return null;
-                        }
-                );
+                targetUser.testData()
+                        .friends()
+                        .add(UserJson.fromEntity(
+                                        requireNonNull(
+                                                xaTransactionTemplate.execute(() -> {
+                                                            final String username = randomUsername();
+                                                            final UserEntity newUser = createNewUser(username, defaultPassword);
+                                                            userdataUserRepositoryHibernate.addFriend(
+                                                                    targetEntity,
+                                                                    newUser
+                                                            );
+                                                            return newUser;
+                                                        }
+                                                )
+                                        ),
+                                        FriendState.FRIEND
+                                )
+                        );
             }
         }
     }
@@ -101,23 +107,62 @@ public class UsersDbClient implements UsersClient {
         });
     }
 
-    @Step("Добавление {count} входящих приглашений в друзья пользователю: {targetUser.username}")
-    public void sendInvitation(UserJson targetUser, int count) {
+    @Override
+    public void addIncomeInvitation(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = userdataUserRepositoryHibernate.findById(
                     targetUser.id()
             ).orElseThrow();
 
             for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                            userdataUserRepositoryHibernate
-                                    .sendInvitation(
-                                            targetEntity,
-                                            UserEntity.fromJson(createUser(randomUsername(), randomPassword()))
-                                    );
-                            return null;
-                        }
-                );
+                targetUser.testData()
+                        .incomeInvitations()
+                        .add(UserJson.fromEntity(
+                                        requireNonNull(
+                                                xaTransactionTemplate.execute(() -> {
+                                                            final String username = randomUsername();
+                                                            final UserEntity newUser = createNewUser(username, defaultPassword);
+                                                            userdataUserRepositoryHibernate.sendInvitation(
+                                                                    newUser,
+                                                                    targetEntity
+                                                            );
+                                                            return newUser;
+                                                        }
+                                                )
+                                        ),
+                                        FriendState.INVITE_RECEIVED
+                                )
+                        );
+            }
+        }
+    }
+
+    @Override
+    public void addOutcomeInvitation(UserJson targetUser, int count) {
+        if (count > 0) {
+            UserEntity targetEntity = userdataUserRepositoryHibernate.findById(
+                    targetUser.id()
+            ).orElseThrow();
+
+            for (int i = 0; i < count; i++) {
+                targetUser.testData()
+                        .outcomeInvitations()
+                        .add(UserJson.fromEntity(
+                                        requireNonNull(
+                                                xaTransactionTemplate.execute(() -> {
+                                                            final String username = randomUsername();
+                                                            final UserEntity newUser = createNewUser(username, defaultPassword);
+                                                            userdataUserRepositoryHibernate.sendInvitation(
+                                                                    targetEntity,
+                                                                    newUser
+                                                            );
+                                                            return newUser;
+                                                        }
+                                                )
+                                        ),
+                                        FriendState.INVITE_RECEIVED
+                                )
+                        );
             }
         }
     }

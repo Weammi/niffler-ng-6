@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import static com.codeborne.selenide.ClickOptions.usingJavaScript;
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -21,6 +22,7 @@ public class FriendsPage extends BasePage<FriendsPage> {
     private final SelenideElement unfriendButton = $("button[class*='MuiButton-containedSecondary']");
     private final SelenideElement myFriendsListHeader = $x("//h2[text()='My friends']");
     private final SelenideElement emptyFriends = $x("//p[text()='There are no users yet']");
+    private final SelenideElement popup = $("div[role='dialog']");
 
     @Step("В таблице друзей отображается пользователь - {name}")
     public FriendsPage friendIsDisplayInFriendsList(String name) {
@@ -67,6 +69,14 @@ public class FriendsPage extends BasePage<FriendsPage> {
     @Step("Проверка пустого списка друзей с сообщением: {message}")
     public FriendsPage shouldHaveEmptyFriendsTable() {
         emptyFriends.shouldBe(visible);
+        return this;
+    }
+
+    @Step("Удалить из друзей пользователя: {username}")
+    public FriendsPage removeFriend(String username) {
+        friendsTable.find(text(username)).shouldBe(visible);
+        friendsTable.find(text(username)).$("button[type='button']").click();
+        popup.$(byText("Delete")).click(usingJavaScript());
         return this;
     }
 }
