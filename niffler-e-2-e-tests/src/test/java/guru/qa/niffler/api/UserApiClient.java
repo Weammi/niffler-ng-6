@@ -13,6 +13,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 import static java.util.Objects.requireNonNull;
@@ -163,5 +165,22 @@ public class UserApiClient implements UsersClient {
                         .add(response.body());
             }
         }
+    }
+
+    @Nonnull
+    @Step("Получить список всех пользователей для пользователя {user.username}")
+    public List<UserJson> getAllUsers(@Nonnull UserJson user, @Nullable String searchQuery) {
+        final Response<List<UserJson>> response;
+
+        try {
+            response = userdataApi.getAllUsers(user.username(), searchQuery).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals(200, response.code());
+
+        return response.body() != null ?
+                response.body()
+                : Collections.emptyList();
     }
 }
