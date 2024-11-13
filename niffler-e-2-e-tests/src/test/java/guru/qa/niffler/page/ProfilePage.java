@@ -2,11 +2,17 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.component.Header;
+import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
+
+import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ProfilePage extends BasePage<ProfilePage> {
 
@@ -19,6 +25,8 @@ public class ProfilePage extends BasePage<ProfilePage> {
     private final ElementsCollection activeCategoryText = $$("span[class*='MuiChip-labelMedium']");
     private final ElementsCollection archiveCategoryText = $$("[class*='MuiChip-colorDefault'] span[class*='MuiChip-labelMedium']");
     private final SelenideElement successSaveChangesMessage = $x("//div[text()='Profile successfully updated']");
+    private final SelenideElement photoInput = $("input[type='file']");
+    private final SelenideElement profileImage = $(".MuiAvatar-img");
 
     @Step("Ввести username - {userName}")
     public ProfilePage setUsername(String userName) {
@@ -85,5 +93,21 @@ public class ProfilePage extends BasePage<ProfilePage> {
     @Step("Проверить имя: {name}")
     public void checkName(String name) {
         nameInput.shouldHave(value(name));
+    }
+
+    @Step("Загрузить фото")
+    @Nonnull
+    public ProfilePage uploadPhoto(String path) {
+        photoInput.uploadFromClasspath(path);
+        return this;
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Step("Актуальная картинка аватарки равна ожидаемой картинке")
+    @Nonnull
+    public ProfilePage checkProfileImage(BufferedImage expectedImage) throws IOException {
+        BufferedImage actualImage = ImageIO.read(profileImage.screenshot());
+        assertFalse(new ScreenDiffResult(actualImage, expectedImage));
+        return this;
     }
 }

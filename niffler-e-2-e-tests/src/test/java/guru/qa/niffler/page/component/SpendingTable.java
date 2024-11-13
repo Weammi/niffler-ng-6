@@ -26,6 +26,10 @@ public class SpendingTable<T extends BasePage<?>> extends BaseComponent<T>  {
         super(self, page);
     }
 
+    public SpendingTable(T page) {
+        super($("#spendings"), page);
+    }
+
     @Step("Выбор периода для отображения трат: {period}")
     public SpendingTable selectPeriod(String period) {
         spends.$("#period").click();

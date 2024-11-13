@@ -3,11 +3,15 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomName;
 
@@ -61,5 +65,17 @@ class ProfileTest {
                 .clickSaveBtn()
                 .shouldBeVisibleSaveChangesSuccessMessage()
                 .checkName(name);
+    }
+
+    @User
+    @ScreenShotTest(value = "img/profile-expected.png")
+    void checkProfileImageTest(UserJson user, BufferedImage expectedProfileImage) throws IOException {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .getHeader().clickAvatar()
+                .clickProfile()
+                .uploadPhoto("img/cat.png")
+                .clickSaveBtn()
+                .checkProfileImage(expectedProfileImage);
     }
 }
