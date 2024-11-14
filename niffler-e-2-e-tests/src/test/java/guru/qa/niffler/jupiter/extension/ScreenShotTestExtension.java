@@ -41,6 +41,10 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
         ScreenShotTest screenShotTest = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
 
+        if (screenShotTest == null) {
+            throw throwable;
+        }
+
         if (screenShotTest.rewriteExpected()) {
             BufferedImage actual = getActual();
             if (actual != null) {

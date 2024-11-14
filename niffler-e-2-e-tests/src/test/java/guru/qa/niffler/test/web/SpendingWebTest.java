@@ -114,10 +114,10 @@ class SpendingWebTest {
                 .login(user.username(), user.testData().password())
                 .checkStatisticsIsDisplay()
                 .editSpending("Обучение Advanced 2.0")
-                .setSpendingAmount("5000")
+                .setSpendingAmount("80000")
                 .save()
                 .checkAlert("New spending is successfully created")
-                .checkStatisticCells(List.of("Обучение 5000"))
+                .checkStatisticCells(List.of("Обучение 80000 ₽"))
                 .checkStatisticsIsDisplay();
         sleep(1000);
         mainPage
@@ -153,7 +153,7 @@ class SpendingWebTest {
         MainPage mainPage = Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkStatisticsIsDisplay()
-                .checkStatisticCells(List.of("Обучение 5000", "QA"))
+                .checkStatisticCells(List.of("Обучение 1000 ₽", "Archived 3100 ₽"))
                 .checkStatisticsIsDisplay();
         sleep(1000);
         mainPage
